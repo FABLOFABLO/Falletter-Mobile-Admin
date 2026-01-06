@@ -31,9 +31,7 @@ class BottomNavBarItem extends StatelessWidget {
             isSelected
                 ? Text(
                     label,
-                    style: FalletterTextStyle.body3.copyWith(
-                      color: FalletterColor.black,
-                    ),
+                    style: FalletterTextStyle.body3,
                   )
                 : Text(
                     label,

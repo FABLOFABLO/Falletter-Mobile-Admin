@@ -68,6 +68,6 @@ abstract final class FalletterTextStyle {
 }
 
 const TextStyle defaultTextStyle = TextStyle(
-  color: FalletterColor.white,
+  color: FalletterColor.black,
   fontFamily: 'WantedSans',
 );

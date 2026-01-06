@@ -1,12 +1,10 @@
 import 'package:falletter_mobile_admin/core/components/button/elevated_button.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
-import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/presentation/splash/provider/auth_status_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
@@ -52,12 +50,9 @@ class _SplashViewState extends ConsumerState<SplashView> {
                             onTap: () {},
                             child: Text(
                               '문의',
-                              style: FalletterTextStyle.body3.copyWith(
-                                color: FalletterColor.black,
-                                decoration: TextDecoration.underline,
+                              style: FalletterTextStyle.body3.copyWith(decoration: TextDecoration.underline),
                               ),
                             ),
-                          ),
                         ],
                       ),
                       const SizedBox(height: 12,),
