@@ -2,8 +2,11 @@ import 'package:falletter_mobile_admin/core/components/bottom_navigation_bar/bot
 import 'package:falletter_mobile_admin/core/provider/bottom_nav_provider.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/presentation/community/view/community_view.dart';
+import 'package:falletter_mobile_admin/presentation/inquiry/view/inquiry_view.dart';
 import 'package:falletter_mobile_admin/presentation/letter/view/letter_view.dart';
 import 'package:falletter_mobile_admin/presentation/notice/view/notice_view.dart';
+import 'package:falletter_mobile_admin/presentation/signin/view/signin_view.dart';
+import 'package:falletter_mobile_admin/presentation/splash/view/splash_view.dart';
 import 'package:falletter_mobile_admin/presentation/students/view/students_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,8 +17,17 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: RouterPath.letter,
+    initialLocation: '/splash',
     routes: [
+      GoRoute(path: '/splash', builder: (context, state) => const SplashView()),
+      GoRoute(
+        path: '/inquiry',
+        builder: (context, state) => const FalletterInquiryView(),
+      ),
+      GoRoute(
+        path: '/signin',
+        builder: (context, state) => const FalletterSigninView(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Scaffold(

@@ -88,7 +88,7 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultTextStyle = FalletterTextStyle.placeholder
-        .copyWith(color: FalletterColor.white)
+        .copyWith(color: FalletterColor.black)
         .merge(style);
 
     InputDecoration inputDecoration = InputDecoration(
