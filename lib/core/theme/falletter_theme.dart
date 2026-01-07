@@ -2,10 +2,10 @@ import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:flutter/material.dart';
 
 InputBorder _border(Set<WidgetState> states) {
-  Color? color = FalletterColor.middleBlack;
+  Color? color = FalletterColor.middleWhite;
 
   if (states.contains(WidgetState.focused)) {
-    color = FalletterColor.white;
+    color = FalletterColor.black;
   }
 
   if (states.contains(WidgetState.error)) {
@@ -19,18 +19,18 @@ InputBorder _border(Set<WidgetState> states) {
 }
 
 InputDecorationTheme inputDecorationTheme = const InputDecorationTheme(
-  labelStyle: TextStyle(color: FalletterColor.white),
+  labelStyle: TextStyle(color: FalletterColor.black),
   helperMaxLines: null,
-  hintStyle: TextStyle(color: FalletterColor.gray700),
+  hintStyle: TextStyle(color: FalletterColor.gray800),
   errorMaxLines: null,
   isDense: true,
   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
   filled: true,
-  fillColor: FalletterColor.middleBlack,
+  fillColor: FalletterColor.black,
   border: WidgetStateInputBorder.resolveWith(_border),
 );
 
 TextSelectionThemeData textSelectionTheme = const TextSelectionThemeData(
-  cursorColor: FalletterColor.gray100,
-  selectionColor: FalletterColor.gray500,
+  cursorColor: FalletterColor.black,
+  selectionColor: FalletterColor.black,
 );
