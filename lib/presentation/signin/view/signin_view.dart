@@ -12,24 +12,43 @@ class FalletterSigninView extends StatefulWidget {
 }
 
 class _FalletterSigninViewState extends State<FalletterSigninView> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController pwController = TextEditingController();
+
+  bool isButtonEnabled = false;
+  bool obscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    void updateButtonState() {
+      setState(() {
+        isButtonEnabled =
+            emailController.text.isNotEmpty && pwController.text.isNotEmpty;
+      });
+    }
+
+    emailController.addListener(updateButtonState);
+    pwController.addListener(updateButtonState);
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    pwController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController pwController = TextEditingController();
-
-    bool isButtonEnabled = false;
-    bool obscureText = true;
-
-    Widget? suffixIcon;
-    if (pwController.text.isNotEmpty) {
-      suffixIcon = obscureText
-          ? FieldIcon.hidePwIcon(
-        onPressed: () => setState(() => obscureText = false),
-      )
-          : FieldIcon.showPwIcon(
-        onPressed: () => setState(() => obscureText = true),
-      );
-    }
+    final Widget suffixIcon = obscureText
+        ? FieldIcon.hidePwIcon(
+            onPressed: () => setState(() => obscureText = false),
+          )
+        : FieldIcon.showPwIcon(
+            onPressed: () => setState(() => obscureText = true),
+          );
 
     return Scaffold(
       body: SafeArea(
@@ -55,6 +74,8 @@ class _FalletterSigninViewState extends State<FalletterSigninView> {
               const SizedBox(height: 32),
               CustomTextFormField(
                 controller: pwController,
+                obscureText: obscureText,
+                autocorrect: false,
                 decoration: InputDecoration(
                   labelText: '비밀번호',
                   labelStyle: FalletterTextStyle.label,
@@ -62,7 +83,7 @@ class _FalletterSigninViewState extends State<FalletterSigninView> {
                   hintStyle: FalletterTextStyle.placeholder.copyWith(
                     color: FalletterColor.gray800,
                   ),
-                  suffixIcon: suffixIcon
+                  suffixIcon: suffixIcon,
                 ),
               ),
             ],
