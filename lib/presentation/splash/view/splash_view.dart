@@ -78,7 +78,7 @@ class _SplashViewState extends ConsumerState<SplashView> {
                                 '문의',
                                 style: FalletterTextStyle.body3.copyWith(
                                   decoration: TextDecoration.underline,
-                                  color: FalletterColor.gray900,
+                                  color: FalletterColor.black,
                                 ),
                               ),
                             ),
