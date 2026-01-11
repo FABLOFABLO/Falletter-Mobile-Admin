@@ -72,7 +72,7 @@ class _SplashViewState extends ConsumerState<SplashView> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                context.go('/inquiry');
+                                context.push('/inquiry');
                               },
                               child: Text(
                                 '문의',
