@@ -48,7 +48,7 @@ class CustomTextFormField extends StatelessWidget {
 
   bool get hasLabel =>
       decoration != null &&
-          (decoration!.label != null || decoration!.labelText != null);
+      (decoration!.label != null || decoration!.labelText != null);
 
   const CustomTextFormField({
     super.key,
@@ -152,32 +152,41 @@ class CustomTextFormField extends StatelessWidget {
             labelStyle: decoration!.labelStyle,
           ),
         ],
-        TextFormField(
-          autocorrect: autocorrect,
-          showCursor: showCursor,
-          controller: controller,
-          initialValue: initialValue,
-          focusNode: focusNode,
-          decoration: inputDecoration,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          style: defaultTextStyle,
-          textAlign: textAlign,
-          autofocus: autofocus,
-          readOnly: readOnly,
-          obscureText: obscureText,
-          maxLines: obscureText ? 1 : maxLines,
-          minLines: obscureText ? 1 : minLines,
-          expands: expands,
-          maxLength: maxLength,
-          onChanged: onChanged,
-          onTap: onTap,
-          onTapOutside: onTapOutside,
-          onEditingComplete: onEditingComplete,
-          onFieldSubmitted: onFieldSubmitted,
-          onSaved: onSaved,
-          validator: validator,
-          inputFormatters: inputFormatters,
+        Theme(
+          data: Theme.of(context).copyWith(
+            textSelectionTheme: const TextSelectionThemeData(
+              selectionColor: FalletterColor.gray400,
+              selectionHandleColor: FalletterColor.black,
+              cursorColor: FalletterColor.black,
+            ),
+          ),
+          child: TextFormField(
+            autocorrect: autocorrect,
+            showCursor: showCursor,
+            controller: controller,
+            initialValue: initialValue,
+            focusNode: focusNode,
+            decoration: inputDecoration,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            style: defaultTextStyle,
+            textAlign: textAlign,
+            autofocus: autofocus,
+            readOnly: readOnly,
+            obscureText: obscureText,
+            maxLines: obscureText ? 1 : maxLines,
+            minLines: obscureText ? 1 : minLines,
+            expands: expands,
+            maxLength: maxLength,
+            onChanged: onChanged,
+            onTap: onTap,
+            onTapOutside: onTapOutside,
+            onEditingComplete: onEditingComplete,
+            onFieldSubmitted: onFieldSubmitted,
+            onSaved: onSaved,
+            validator: validator,
+            inputFormatters: inputFormatters,
+          ),
         ),
       ],
     );
