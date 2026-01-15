@@ -1,10 +1,12 @@
 import 'package:falletter_mobile_admin/core/components/app_bar/custom_app_bar.dart';
+import 'package:falletter_mobile_admin/core/components/button/elevated_button.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/presentation/inquiry/provider/inquiry_provider.dart';
 import 'package:falletter_mobile_admin/presentation/inquiry/view/admin_card_view.dart';
 import 'package:falletter_mobile_admin/presentation/inquiry/widget/admin_contact_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class FalletterInquiryView extends ConsumerWidget {
   const FalletterInquiryView({super.key});
@@ -43,6 +45,11 @@ class FalletterInquiryView extends ConsumerWidget {
                   ),
                 ],
               ),
+            ),
+            Spacer(),
+            CustomElevatedButton(
+              child: Text('어드민 등록하기'),
+              onPressed: () => context.push('/register'),
             ),
           ],
         ),

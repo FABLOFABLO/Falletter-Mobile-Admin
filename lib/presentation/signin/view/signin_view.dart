@@ -3,6 +3,7 @@ import 'package:falletter_mobile_admin/core/components/icon/field_icon.dart';
 import 'package:falletter_mobile_admin/core/components/text_form_field/text_form_field.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/presentation/signin/provider/signin_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,7 +141,6 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
               ),
             ),
 
-            // 문의 Row (고정)
             Positioned(
               left: 0,
               right: 0,
@@ -158,9 +158,7 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
                     ),
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () {
-                        // TODO: 문의 동작
-                      },
+                      onTap: () => context.push(RouterPath.inquiry),
                       child: Text(
                         '문의',
                         style: FalletterTextStyle.body3.copyWith(
@@ -174,7 +172,6 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
               ),
             ),
 
-            // 버튼 (키보드 위로만)
             Positioned(
               left: 0,
               right: 0,
