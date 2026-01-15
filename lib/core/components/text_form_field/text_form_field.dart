@@ -151,6 +151,7 @@ class CustomTextFormField extends StatelessWidget {
             labelText: decoration!.labelText,
             labelStyle: decoration!.labelStyle,
           ),
+          SizedBox(height: labelSpacing),
         ],
         Theme(
           data: Theme.of(context).copyWith(
