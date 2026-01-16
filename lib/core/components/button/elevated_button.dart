@@ -10,6 +10,7 @@ class CustomElevatedButton extends StatelessWidget {
   final Color? backgroundColor;
   final Widget child;
   final TextStyle? textStyle;
+  final BorderSide? border;
 
   const CustomElevatedButton({
     super.key,
@@ -20,6 +21,7 @@ class CustomElevatedButton extends StatelessWidget {
     this.backgroundColor,
     required this.child,
     this.textStyle,
+    this.border,
   });
 
   @override
@@ -40,8 +42,13 @@ class CustomElevatedButton extends StatelessWidget {
           backgroundColor: bgColor,
           shadowColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
+          overlayColor: Colors.transparent,
+          splashFactory: NoSplash.splashFactory,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: border ?? BorderSide.none,
+          ),
         ),
         child: DefaultTextStyle(
           style: (textStyle ?? FalletterTextStyle.button).copyWith(
