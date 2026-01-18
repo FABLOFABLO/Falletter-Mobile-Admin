@@ -21,7 +21,7 @@ class AdminRegisterPasswordView extends StatelessWidget {
   }) decorationBuilder;
 
   const AdminRegisterPasswordView({
-    super.key,
+    super.key, 
     required this.state,
     required this.notifier,
     required this.pwController,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum Gender { male, female }
@@ -23,6 +24,11 @@ class AdminRegisterState {
   final bool obscurePasswordConfirm;
   final bool showErrorBorder;
 
+  final bool isSendingCode;
+  final bool codeSent;
+
+  final int verifyExpiresSecondsLeft;
+
   const AdminRegisterState({
     this.step = AdminRegisterStep.info,
     this.gender,
@@ -34,13 +40,18 @@ class AdminRegisterState {
     this.obscurePassword = true,
     this.obscurePasswordConfirm = true,
     this.showErrorBorder = false,
+    this.isSendingCode = false,
+    this.codeSent = false,
+    this.verifyExpiresSecondsLeft = 0,
   });
 
   bool get canGoNextInfo =>
       gender != null &&
           name.trim().isNotEmpty &&
           emailLocalPart.trim().isNotEmpty &&
-          verifyCode.trim().isNotEmpty;
+          verifyCode.trim().isNotEmpty &&
+          codeSent &&
+          verifyExpiresSecondsLeft > 0;
 
   bool get canRegister =>
       password.trim().isNotEmpty &&
@@ -58,6 +69,9 @@ class AdminRegisterState {
     bool? obscurePassword,
     bool? obscurePasswordConfirm,
     bool? showErrorBorder,
+    bool? isSendingCode,
+    bool? codeSent,
+    int? verifyExpiresSecondsLeft,
   }) {
     return AdminRegisterState(
       step: step ?? this.step,
@@ -71,25 +85,64 @@ class AdminRegisterState {
       obscurePasswordConfirm:
       obscurePasswordConfirm ?? this.obscurePasswordConfirm,
       showErrorBorder: showErrorBorder ?? this.showErrorBorder,
+      isSendingCode: isSendingCode ?? this.isSendingCode,
+      codeSent: codeSent ?? this.codeSent,
+      verifyExpiresSecondsLeft:
+      verifyExpiresSecondsLeft ?? this.verifyExpiresSecondsLeft,
     );
   }
 }
 
 class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
+  Timer? _verifyExpiryTimer;
+
   @override
-  AdminRegisterState build() => const AdminRegisterState();
+  AdminRegisterState build() {
+    ref.onDispose(() {
+      _verifyExpiryTimer?.cancel();
+      _verifyExpiryTimer = null;
+    });
+    return const AdminRegisterState();
+  }
 
   void selectGender(Gender gender) => state = state.copyWith(gender: gender);
   void setName(String v) => state = state.copyWith(name: v);
   void setEmailLocalPart(String v) => state = state.copyWith(emailLocalPart: v);
   void setVerifyCode(String v) => state = state.copyWith(verifyCode: v);
 
-  /// TODO: 실제 API 연결 시 여기서 이메일 인증번호 전송 요청
   Future<void> sendVerifyCode() async {
     state = state.copyWith(showErrorBorder: true);
-    if (state.emailLocalPart.trim().isEmpty) return;
+    final local = state.emailLocalPart.trim();
+    if (local.isEmpty) return;
 
-    // TODO: send email code usecase/repo 호출
+    if (state.isSendingCode) return;
+
+    final email = '$local@dsm.hs.kr';
+
+    state = state.copyWith(isSendingCode: true);
+    try {
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+
+      state = state.copyWith(codeSent: true);
+      _startVerifyExpiry(seconds: 300);
+    } finally {
+      state = state.copyWith(isSendingCode: false);
+    }
+  }
+
+  void _startVerifyExpiry({required int seconds}) {
+    _verifyExpiryTimer?.cancel();
+    state = state.copyWith(verifyExpiresSecondsLeft: seconds);
+
+    _verifyExpiryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final next = state.verifyExpiresSecondsLeft - 1;
+      if (next <= 0) {
+        timer.cancel();
+        state = state.copyWith(verifyExpiresSecondsLeft: 0);
+        return;
+      }
+      state = state.copyWith(verifyExpiresSecondsLeft: next);
+    });
   }
 
   void nextToPassword() {
@@ -109,8 +162,8 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
   void toggleObscurePassword() =>
       state = state.copyWith(obscurePassword: !state.obscurePassword);
 
-  void toggleObscurePasswordConfirm() => state = state.copyWith(
-      obscurePasswordConfirm: !state.obscurePasswordConfirm);
+  void toggleObscurePasswordConfirm() => state =
+      state.copyWith(obscurePasswordConfirm: !state.obscurePasswordConfirm);
 
   Future<void> register() async {
     state = state.copyWith(showErrorBorder: true);
@@ -124,6 +177,5 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
     );
   }
 
-  /// 완료 화면까지 갔다가 다시 처음으로 초기화가 필요하면 사용
   void reset() => state = const AdminRegisterState();
 }
