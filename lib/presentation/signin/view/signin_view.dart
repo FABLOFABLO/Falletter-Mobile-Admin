@@ -5,9 +5,11 @@ import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/presentation/signin/provider/signin_provider.dart';
+import 'package:falletter_mobile_admin/presentation/signin/provider/signin_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class FalletterSigninView extends ConsumerStatefulWidget {
   const FalletterSigninView({super.key});
@@ -21,6 +23,23 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
   final emailController = TextEditingController();
   final pwController = TextEditingController();
 
+  ProviderSubscription<SignInState>? _sub;
+
+  // ✅ [추가] errorType -> 스낵바 메시지 매핑
+  String? _errorMessage(SignInErrorType type) {
+    switch (type) {
+      case SignInErrorType.userNotFound:
+      case SignInErrorType.invalidCredential:
+        return '등록되지 않은 아이디 입니다';
+      case SignInErrorType.notApproved:
+        return '등록되지 않은 아이디 입니다';
+      case SignInErrorType.unknown:
+        return '등록되지 않은 아이디 입니다';
+      case SignInErrorType.none:
+        return null;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -31,10 +50,80 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
     pwController.addListener(() {
       ref.read(signinProvider.notifier).onPasswordChanged(pwController.text);
     });
+
+    _sub = ref.listenManual<SignInState>(signinProvider, (prev, next) {
+      final prevSuccess = prev?.isSuccess ?? false;
+      if (!prevSuccess && next.isSuccess) {
+        context.go('/letter');
+        ref.read(signinProvider.notifier).consumeSuccess();
+        return;
+      }
+
+      final msg = _errorMessage(next.errorType);
+      if (msg != null && msg.isNotEmpty) {
+        final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+        const buttonBottomPadding = 50.0;
+        const horizontal = 20.0;
+        const gapNoKeyboard = 60.0;
+
+        final gap = bottomInset > 0 ? 0 : gapNoKeyboard;
+        final bottomMargin = bottomInset + buttonBottomPadding + gap;
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.fromLTRB(
+                horizontal,
+                0,
+                horizontal,
+                bottomMargin,
+              ),
+              backgroundColor: FalletterColor.black,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              duration: const Duration(seconds: 2),
+              content: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      msg,
+                      style: FalletterTextStyle.body2.copyWith(
+                        color: FalletterColor.white,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ref.read(signinProvider.notifier).consumeError();
+                    },
+                    child: const Icon(
+                      Symbols.cancel,
+                      color: FalletterColor.white,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        ref.read(signinProvider.notifier).consumeError();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _sub?.close();
+    _sub = null;
+
     emailController.dispose();
     pwController.dispose();
     super.dispose();
@@ -53,8 +142,12 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
     required Widget suffixIcon,
     required bool showError,
   }) {
-    final enabled = _outline(showError ? FalletterColor.red : FalletterColor.middleWhite);
-    final focused = _outline(showError ? FalletterColor.red : FalletterColor.black);
+    final enabled = _outline(
+      showError ? FalletterColor.red : FalletterColor.middleWhite,
+    );
+    final focused = _outline(
+      showError ? FalletterColor.red : FalletterColor.black,
+    );
 
     return InputDecoration(
       labelText: label,
@@ -69,19 +162,8 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
     );
   }
 
-  void _listenSuccess() {
-    ref.listen(signinProvider, (prev, next) {
-      if (next.isSuccess) {
-        context.go('/letter');
-        ref.read(signinProvider.notifier).consumeSuccess();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    _listenSuccess();
-
     final state = ref.watch(signinProvider);
     final viewInsetsBottom = MediaQuery.of(context).viewInsets.bottom;
 
@@ -108,7 +190,6 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
                 children: [
                   Text('로그인하고\n팔레터 사용하기', style: FalletterTextStyle.title2),
                   const SizedBox(height: 40),
-
                   CustomTextFormField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -120,16 +201,15 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
                       showError: showError,
                     ),
                   ),
-
                   const SizedBox(height: 32),
-
                   CustomTextFormField(
                     controller: pwController,
                     obscureText: state.obscureText,
                     autocorrect: false,
                     textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) =>
-                    canSubmit ? ref.read(signinProvider.notifier).submit() : null,
+                    onFieldSubmitted: (_) => canSubmit
+                        ? ref.read(signinProvider.notifier).submit()
+                        : null,
                     decoration: _decoration(
                       label: '비밀번호',
                       hint: '비밀번호를 입력해주세요.',
@@ -140,7 +220,6 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
                 ],
               ),
             ),
-
             Positioned(
               left: 0,
               right: 0,
@@ -171,7 +250,6 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
                 ),
               ),
             ),
-
             Positioned(
               left: 0,
               right: 0,
@@ -184,8 +262,9 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
                   onPressed: canSubmit
                       ? () => ref.read(signinProvider.notifier).submit()
                       : null,
-                  backgroundColor:
-                  canSubmit ? FalletterColor.black : FalletterColor.gray800,
+                  backgroundColor: canSubmit
+                      ? FalletterColor.black
+                      : FalletterColor.gray800,
                   textColor: FalletterColor.white,
                   child: const Text('로그인하기'),
                 ),

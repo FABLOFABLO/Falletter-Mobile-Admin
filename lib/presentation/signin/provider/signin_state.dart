@@ -1,41 +1,51 @@
-import 'package:flutter/foundation.dart';
+enum SignInErrorType {
+  none,
+  userNotFound,
+  invalidCredential,
+  notApproved,
+  unknown,
+}
 
-@immutable
-class SigninState {
+class SignInState {
   final String email;
   final String password;
 
+  final bool isLoading;
   final bool obscureText;
   final bool showErrorBorder;
-
-  final bool isLoading;
   final bool isSuccess;
 
-  const SigninState({
+  final SignInErrorType errorType;
+
+  const SignInState({
     this.email = '',
     this.password = '',
+    this.isLoading = false,
     this.obscureText = true,
     this.showErrorBorder = false,
-    this.isLoading = false,
     this.isSuccess = false,
-});
-  bool get canSubmit => email.trim().isNotEmpty && password.isNotEmpty;
+    this.errorType = SignInErrorType.none,
+  });
 
-  SigninState copyWith({
+  bool get canSubmit => email.trim().isNotEmpty && password.trim().isNotEmpty;
+
+  SignInState copyWith({
     String? email,
     String? password,
+    bool? isLoading,
     bool? obscureText,
     bool? showErrorBorder,
-    bool? isLoading,
     bool? isSuccess,
-}) {
-    return SigninState(
+    SignInErrorType? errorType,
+  }) {
+    return SignInState(
       email: email ?? this.email,
       password: password ?? this.password,
+      isLoading: isLoading ?? this.isLoading,
       obscureText: obscureText ?? this.obscureText,
       showErrorBorder: showErrorBorder ?? this.showErrorBorder,
-      isLoading: isLoading ?? this.isLoading,
-      isSuccess: isSuccess ?? this.isSuccess
+      isSuccess: isSuccess ?? this.isSuccess,
+      errorType: errorType ?? this.errorType,
     );
   }
 }
