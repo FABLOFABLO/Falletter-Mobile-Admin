@@ -162,8 +162,8 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
   void toggleObscurePassword() =>
       state = state.copyWith(obscurePassword: !state.obscurePassword);
 
-  void toggleObscurePasswordConfirm() => state =
-      state.copyWith(obscurePasswordConfirm: !state.obscurePasswordConfirm);
+  void toggleObscurePasswordConfirm() => state = state.copyWith(
+      obscurePasswordConfirm: !state.obscurePasswordConfirm);
 
   Future<void> register() async {
     state = state.copyWith(showErrorBorder: true);
@@ -173,6 +173,21 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
 
     state = state.copyWith(
       step: AdminRegisterStep.done,
+      showErrorBorder: false,
+    );
+  }
+
+  void backToInfo() {
+    if (state.step != AdminRegisterStep.password) return;
+    state = state.copyWith(
+      step: AdminRegisterStep.info,
+      showErrorBorder: false,
+    );
+  }
+
+  void prepareExitToRoot() {
+    state = state.copyWith(
+      step: AdminRegisterStep.info,
       showErrorBorder: false,
     );
   }

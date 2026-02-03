@@ -16,17 +16,19 @@ class AdminRegisterInfoView extends StatelessWidget {
   final TextEditingController verifyController;
 
   final InputDecoration Function({
-  required String label,
-  required String hint,
-  Widget? suffixIcon,
-  required bool showError,
-  }) decorationBuilder;
+    required String label,
+    required String hint,
+    Widget? suffixIcon,
+    required bool showError,
+  })
+  decorationBuilder;
 
   final Widget Function({
-  required String label,
-  required VoidCallback onPressed,
-  required bool selected,
-  }) outlinedButtonBuilder;
+    required String label,
+    required VoidCallback onPressed,
+    required bool selected,
+  })
+  outlinedButtonBuilder;
 
   const AdminRegisterInfoView({
     super.key,
@@ -49,10 +51,7 @@ class AdminRegisterInfoView extends StatelessWidget {
       return '$m:$s';
     }
 
-    final bottomInset = MediaQuery
-        .of(context)
-        .viewInsets
-        .bottom;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -64,14 +63,21 @@ class AdminRegisterInfoView extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior
-                    .onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Column(
                       children: [
-                        const CustomAppBar(showBack: true, showLogout: false),
+                        CustomAppBar(
+                          showBack: true,
+                          showLogout: false,
+                          onBack: () {
+                            notifier.prepareExitToRoot();
+                            Navigator.of(context).pop();
+                          },
+                        ),
 
                         Padding(
                           padding: const EdgeInsets.all(20),
@@ -98,9 +104,9 @@ class AdminRegisterInfoView extends StatelessWidget {
                                       child: outlinedButtonBuilder(
                                         label: '여성',
                                         selected: state.gender == Gender.female,
-                                        onPressed: () =>
-                                            notifier.selectGender(
-                                                Gender.female),
+                                        onPressed: () => notifier.selectGender(
+                                          Gender.female,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -118,9 +124,7 @@ class AdminRegisterInfoView extends StatelessWidget {
                                   hint: '이름을 입력해주세요.',
                                   suffixIcon: null,
                                   showError:
-                                  showError && state.name
-                                      .trim()
-                                      .isEmpty,
+                                      showError && state.name.trim().isEmpty,
                                 ),
                               ),
 
@@ -134,10 +138,9 @@ class AdminRegisterInfoView extends StatelessWidget {
                                   label: '이메일',
                                   hint: '이메일을 입력해주세요.',
                                   suffixIcon: FieldIcon.emailText(),
-                                  showError: showError &&
-                                      state.emailLocalPart
-                                          .trim()
-                                          .isEmpty,
+                                  showError:
+                                      showError &&
+                                      state.emailLocalPart.trim().isEmpty,
                                 ),
                               ),
 
@@ -181,26 +184,23 @@ class AdminRegisterInfoView extends StatelessWidget {
                                 controller: verifyController,
                                 keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.done,
-                                onFieldSubmitted: (_) =>
-                                state.canGoNextInfo
+                                onFieldSubmitted: (_) => state.canGoNextInfo
                                     ? notifier.nextToPassword()
                                     : null,
                                 decoration: decorationBuilder(
                                   label: '인증번호',
                                   hint: '인증번호를 입력해주세요.',
                                   suffixIcon: null,
-                                  showError: showError &&
-                                      state.verifyCode
-                                          .trim()
-                                          .isEmpty,
+                                  showError:
+                                      showError &&
+                                      state.verifyCode.trim().isEmpty,
                                 ),
                               ),
 
                               if (state.codeSent) ...[
                                 const SizedBox(height: 10),
                                 Text(
-                                  '인증 만료 시간 ${formatMmSs(
-                                      state.verifyExpiresSecondsLeft)}',
+                                  '인증 만료 시간 ${formatMmSs(state.verifyExpiresSecondsLeft)}',
                                   style: FalletterTextStyle.body4.copyWith(
                                     color: FalletterColor.red,
                                     fontWeight: FontWeight.w400,

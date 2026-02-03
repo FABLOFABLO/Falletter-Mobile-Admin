@@ -14,14 +14,15 @@ class AdminRegisterPasswordView extends StatelessWidget {
   final TextEditingController pwConfirmController;
 
   final InputDecoration Function({
-  required String label,
-  required String hint,
-  Widget? suffixIcon,
-  required bool showError,
-  }) decorationBuilder;
+    required String label,
+    required String hint,
+    Widget? suffixIcon,
+    required bool showError,
+  })
+  decorationBuilder;
 
   const AdminRegisterPasswordView({
-    super.key, 
+    super.key,
     required this.state,
     required this.notifier,
     required this.pwController,
@@ -33,11 +34,16 @@ class AdminRegisterPasswordView extends StatelessWidget {
   Widget build(BuildContext context) {
     final showError = state.showErrorBorder;
     final pwMismatch =
-        state.passwordConfirm.trim().isNotEmpty && state.password != state.passwordConfirm;
+        state.passwordConfirm.trim().isNotEmpty &&
+        state.password != state.passwordConfirm;
 
     return Column(
       children: [
-        const CustomAppBar(showBack: true, showLogout: false),
+        CustomAppBar(
+          showBack: true,
+          showLogout: false,
+          onBack: notifier.backToInfo,
+        ),
         Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -54,8 +60,12 @@ class AdminRegisterPasswordView extends StatelessWidget {
                   label: '비밀번호',
                   hint: '비밀번호를 입력해주세요.',
                   suffixIcon: state.obscurePassword
-                      ? FieldIcon.hidePwIcon(onPressed: notifier.toggleObscurePassword)
-                      : FieldIcon.showPwIcon(onPressed: notifier.toggleObscurePassword),
+                      ? FieldIcon.hidePwIcon(
+                          onPressed: notifier.toggleObscurePassword,
+                        )
+                      : FieldIcon.showPwIcon(
+                          onPressed: notifier.toggleObscurePassword,
+                        ),
                   showError: showError && state.password.trim().isEmpty,
                 ),
               ),
@@ -66,18 +76,21 @@ class AdminRegisterPasswordView extends StatelessWidget {
                 controller: pwConfirmController,
                 obscureText: state.obscurePasswordConfirm,
                 textInputAction: TextInputAction.done,
-                onFieldSubmitted: (_) => state.canRegister ? notifier.register() : null,
+                onFieldSubmitted: (_) =>
+                    state.canRegister ? notifier.register() : null,
                 decoration: decorationBuilder(
                   label: '비밀번호 확인',
                   hint: '비밀번호를 입력해주세요.',
                   suffixIcon: state.obscurePasswordConfirm
                       ? FieldIcon.hidePwIcon(
-                    onPressed: notifier.toggleObscurePasswordConfirm,
-                  )
+                          onPressed: notifier.toggleObscurePasswordConfirm,
+                        )
                       : FieldIcon.showPwIcon(
-                    onPressed: notifier.toggleObscurePasswordConfirm,
-                  ),
-                  showError: (showError && state.passwordConfirm.trim().isEmpty) || (showError && pwMismatch),
+                          onPressed: notifier.toggleObscurePasswordConfirm,
+                        ),
+                  showError:
+                      (showError && state.passwordConfirm.trim().isEmpty) ||
+                      (showError && pwMismatch),
                 ),
               ),
 
