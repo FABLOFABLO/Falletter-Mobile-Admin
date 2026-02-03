@@ -11,6 +11,8 @@ class CustomAppBar extends StatelessWidget {
   final double height;
   final EdgeInsetsGeometry padding;
 
+  final VoidCallback? onBack;
+
   const CustomAppBar({
     super.key,
     this.leftAsset,
@@ -19,6 +21,7 @@ class CustomAppBar extends StatelessWidget {
     this.showLogout = false,
     this.height = 40,
     this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    this.onBack,
   });
 
   Future<void> _handleLogout(BuildContext context) async {
@@ -58,12 +61,15 @@ class CustomAppBar extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: showBack
-                    ? _icon(
-                        onTap: () {
-                          Navigator.of(context).maybePop();
-                        },
-                        child: const Icon(Symbols.arrow_back_ios, size: 22),
-                      )
+                    ? _icon(onTap: () {
+                  if (onBack != null) {
+                    onBack!();
+                    return;
+                  }
+                  Navigator.of(context).maybePop();
+                },
+                  child: const Icon(Symbols.arrow_back_ios, size: 22),
+                )
                     : const SizedBox(width: 40, height: 40),
               ),
 
