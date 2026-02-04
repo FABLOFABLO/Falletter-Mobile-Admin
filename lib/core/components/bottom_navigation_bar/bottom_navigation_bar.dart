@@ -24,34 +24,31 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Container(
-        decoration: const BoxDecoration(
-          color: FalletterColor.white,
-          border: Border(
-            top: BorderSide(color: FalletterColor.gray600, width: 1),
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        color: FalletterColor.background,
+        border: Border(
+          top: BorderSide(color: FalletterColor.gray600, width: 1),
         ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ...List.generate(_icons.length, (index) {
-                  final isSelected = currentIndex == index;
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ...List.generate(_icons.length, (index) {
+                final isSelected = currentIndex == index;
 
-                  return BottomNavBarItem(
-                    icon: _icons[index],
-                    label: _labels[index],
-                    isSelected: isSelected,
-                    onTap: () => onTap(index),
-                  );
-                }),
-              ],
-            ),
+                return BottomNavBarItem(
+                  icon: _icons[index],
+                  label: _labels[index],
+                  isSelected: isSelected,
+                  onTap: () => onTap(index),
+                );
+              }),
+            ],
           ),
         ),
       ),

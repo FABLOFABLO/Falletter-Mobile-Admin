@@ -18,7 +18,6 @@ class BaseCardList extends StatelessWidget {
   final List<PopupMenuEntry>? menuItems;
   final void Function(dynamic value)? onMenuSelected;
 
-  final Color? backgroundColor;
   final double radius;
 
   const BaseCardList({
@@ -35,7 +34,6 @@ class BaseCardList extends StatelessWidget {
     this.trailing,
     this.menuItems,
     this.onMenuSelected,
-    this.backgroundColor,
     this.radius = 8,
   });
 
@@ -52,7 +50,7 @@ class BaseCardList extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: backgroundColor ?? FalletterColor.middleWhite,
+              color: FalletterColor.middleWhite,
               borderRadius: BorderRadius.circular(radius),
             ),
             child: Row(
