@@ -28,6 +28,10 @@ class LetterModal extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: FalletterColor.white,
+                border: Border.all(
+                  color: FalletterColor.black,
+                  width: 2,
+                ),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -61,7 +65,7 @@ class LetterModal extends StatelessWidget {
                     divider,
                     const SizedBox(height: 14),
                     Text(
-                      model.dateText,
+                      '${model.dateText} 도착',
                       textAlign: TextAlign.center,
                       style: FalletterTextStyle.body3.copyWith(
                         color: FalletterColor.gray800,

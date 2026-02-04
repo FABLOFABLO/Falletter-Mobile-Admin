@@ -1,3 +1,4 @@
+import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -61,15 +62,16 @@ class CustomAppBar extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: showBack
-                    ? _icon(onTap: () {
-                  if (onBack != null) {
-                    onBack!();
-                    return;
-                  }
-                  Navigator.of(context).maybePop();
-                },
-                  child: const Icon(Symbols.arrow_back_ios, size: 22),
-                )
+                    ? _icon(
+                        onTap: () {
+                          if (onBack != null) {
+                            onBack!();
+                            return;
+                          }
+                          Navigator.of(context).maybePop();
+                        },
+                        child: const Icon(Symbols.arrow_back_ios, size: 22),
+                      )
                     : const SizedBox(width: 40, height: 40),
               ),
 
@@ -78,7 +80,12 @@ class CustomAppBar extends StatelessWidget {
                 child: showLogout
                     ? _icon(
                         onTap: () => _handleLogout(context),
-                        child: const Icon(Symbols.logout, size: 22),
+                        child: Icon(
+                          Symbols.logout,
+                          size: 22,
+                          color: FalletterColor.red,
+                          weight: 600,
+                        ),
                       )
                     : const SizedBox(width: 40, height: 40),
               ),
