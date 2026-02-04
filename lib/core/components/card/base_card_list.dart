@@ -23,7 +23,7 @@ class BaseCardList extends StatelessWidget {
 
   const BaseCardList({
     super.key,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(20),
     this.onTap,
     this.leading,
     this.title,
@@ -41,39 +41,42 @@ class BaseCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final card = Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: FalletterColor.middleWhite,
-        borderRadius: BorderRadius.circular(radius),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (leading != null) ...[leading!, const SizedBox(width: 12)],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _HeaderRow(
-                  title: title,
-                  subtitle: subtitle,
-                  badge: badge,
-                  meta: meta,
-                ),
-                if (body != null) ...[const SizedBox(height: 10), body!],
-                if (footer != null) ...[const SizedBox(height: 10), footer!],
-              ],
+    final card = Padding(
+      padding: const EdgeInsets.all(20),
+      child: Container(
+        padding: padding,
+        decoration: BoxDecoration(
+          color: FalletterColor.middleWhite,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (leading != null) ...[leading!, const SizedBox(width: 12)],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _HeaderRow(
+                    title: title,
+                    subtitle: subtitle,
+                    badge: badge,
+                    meta: meta,
+                  ),
+                  if (body != null) ...[const SizedBox(height: 10), body!],
+                  if (footer != null) ...[const SizedBox(height: 10), footer!],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          if (trailing != null)
-            trailing!
-          else if (menuItems != null && menuItems!.isNotEmpty)
-            _MoreMenu(items: menuItems!, onSelected: onMenuSelected)
-          else
-            const SizedBox.shrink(),
-        ],
+            const SizedBox(width: 8),
+            if (trailing != null)
+              trailing!
+            else if (menuItems != null && menuItems!.isNotEmpty)
+              _MoreMenu(items: menuItems!, onSelected: onMenuSelected)
+            else
+              const SizedBox.shrink(),
+          ],
+        ),
       ),
     );
     if (onTap == null) return card;
@@ -115,7 +118,7 @@ class _HeaderRow extends StatelessWidget {
               if (meta != null) ...[const SizedBox(width: 8), meta!],
             ],
           ),
-        if (hasLine2) ...[if (hasLine1) const SizedBox(width: 6), subtitle!],
+        if (hasLine2) ...[if (hasLine1) const SizedBox(height: 6), subtitle!],
       ],
     );
   }
