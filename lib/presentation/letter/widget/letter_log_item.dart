@@ -33,10 +33,15 @@ class LetterLogItem extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (_) =>
-          LetterModal(model: model, onClose: () => Navigator.of(context).pop()),
+      builder: (dialogContext) {
+        return LetterModal(
+          model: model,
+          onClose: () => Navigator.of(dialogContext).pop(),
+        );
+      },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
