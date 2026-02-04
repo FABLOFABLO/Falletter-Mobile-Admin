@@ -1,4 +1,6 @@
+import 'package:falletter_mobile_admin/core/components/app_bar/custom_app_bar.dart';
 import 'package:falletter_mobile_admin/core/components/bottom_navigation_bar/bottom_navigation_bar.dart';
+import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/provider/bottom_nav_provider.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/presentation/community/view/community_view.dart';
@@ -21,8 +23,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: RouterPath.splash,
     routes: [
       GoRoute(
-          path: RouterPath.splash,
-          builder: (context, state) => const SplashView(),
+        path: RouterPath.splash,
+        builder: (context, state) => const SplashView(),
       ),
       GoRoute(
         path: RouterPath.inquiry,
@@ -40,6 +42,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Scaffold(
+            backgroundColor: FalletterColor.white,
+            appBar: const PreferredSize(
+              preferredSize: Size.fromHeight(70),
+              child: CustomAppBar(showBack: false, showLogout: true),
+            ),
             body: navigationShell,
             bottomNavigationBar: CustomBottomNavigationBar(
               currentIndex: navigationShell.currentIndex,

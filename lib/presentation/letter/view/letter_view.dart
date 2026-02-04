@@ -1,5 +1,3 @@
-import 'package:falletter_mobile_admin/core/components/app_bar/custom_app_bar.dart';
-import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/presentation/letter/widget/letter_log_item.dart';
 import 'package:flutter/material.dart';
 
@@ -18,29 +16,16 @@ class FalletterLetterView extends StatelessWidget {
       ),
     );
 
-    return Scaffold(
-      backgroundColor: FalletterColor.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const CustomAppBar(showBack: false, showLogout: true),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return LetterLogItem(
-                    dateText: item.dateText,
-                    fromTo: item.fromTo,
-                    content: item.content,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return LetterLogItem(
+          dateText: item.dateText,
+          fromTo: item.fromTo,
+          content: item.content,
+        );
+      },
     );
   }
 }
