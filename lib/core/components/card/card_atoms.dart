@@ -17,7 +17,11 @@ class BadgeChip extends StatelessWidget {
   final String text;
   final Color badgeColor;
 
-  const BadgeChip({super.key, required this.text, required this.badgeColor});
+  const BadgeChip({
+    super.key,
+    required this.text,
+    required this.badgeColor
+  });
 
   @override
   Widget build(BuildContext context) {
