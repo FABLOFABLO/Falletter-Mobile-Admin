@@ -28,7 +28,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Container(
         decoration: const BoxDecoration(
-          color: FalletterColor.background,
+          color: FalletterColor.white,
           border: Border(
             top: BorderSide(color: FalletterColor.gray600, width: 1),
           ),
