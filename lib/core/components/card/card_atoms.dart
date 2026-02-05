@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 class Profile extends StatelessWidget {
   final double size;
 
-  const Profile({super.key, this.size = 32});
+  const Profile({super.key, this.size = 20});
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(radius: 100, backgroundColor: FalletterColor.gray800);
+    return CircleAvatar(
+        radius: size,
+        backgroundColor: FalletterColor.gray400,
+    );
   }
 }
 
