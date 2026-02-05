@@ -1,3 +1,5 @@
+import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
+import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -26,18 +28,13 @@ class CustomAppBar extends StatelessWidget {
   });
 
   Future<void> _handleLogout(BuildContext context) async {
-    // TODO: 나중에 실제 로그아웃 로직/모달 연결
-    await showDialog(
+    showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('로그아웃 모달 테스트용입니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('확인'),
-          ),
-        ],
+      builder: (context) => DefaultModal(
+        model: DefaultModalUiModel.logout(),
+        onConfirmLogout: () {
+          // 실제 로그아웃 로직 수행 (예: Provider 호출, 페이지 이동 등)
+        },
       ),
     );
   }

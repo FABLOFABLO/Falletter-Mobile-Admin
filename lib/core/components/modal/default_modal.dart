@@ -64,12 +64,12 @@ class _DefaultModalState extends ConsumerState<DefaultModal> {
     if (_isBan) {
       final state = ref.read(defaultModalProvider(initialDay));
       if (!state.confirmEnabled) return;
-
+      _close();
       widget.onConfirmBan?.call(state.selectedDays, state.reason.trim());
     } else {
+      _close();
       widget.onConfirmLogout?.call();
     }
-    _close();
   }
 
   @override
