@@ -131,6 +131,9 @@ class _MoreMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
+      color: FalletterColor.middleWhite,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      elevation: 0,
       itemBuilder: (_) => items,
       onSelected: onSelected,
       child: const Padding(
