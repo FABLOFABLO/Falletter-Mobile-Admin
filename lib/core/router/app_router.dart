@@ -3,10 +3,13 @@ import 'package:falletter_mobile_admin/core/components/bottom_navigation_bar/bot
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/provider/bottom_nav_provider.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
+import 'package:falletter_mobile_admin/presentation/community/view/community_detail_view.dart';
 import 'package:falletter_mobile_admin/presentation/community/view/community_view.dart';
 import 'package:falletter_mobile_admin/presentation/inquiry/view/admin_register_view.dart';
 import 'package:falletter_mobile_admin/presentation/inquiry/view/inquiry_view.dart';
 import 'package:falletter_mobile_admin/presentation/letter/view/letter_view.dart';
+import 'package:falletter_mobile_admin/presentation/notice/provider/notice_provider.dart';
+import 'package:falletter_mobile_admin/presentation/notice/view/notice_detail_view.dart';
 import 'package:falletter_mobile_admin/presentation/notice/view/notice_view.dart';
 import 'package:falletter_mobile_admin/presentation/notice/view/notice_write_view.dart';
 import 'package:falletter_mobile_admin/presentation/signin/view/signin_view.dart';
@@ -76,6 +79,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RouterPath.community,
                 builder: (_, __) => const FalletterCommunityView(),
+                routes: [
+                  GoRoute(
+                    path: 'detail',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) {
+                      final post = state.extra;
+                      return CommunityDetailView(
+                        post: post,
+                        onDelete: () {},
+                      );
+                    },
+                  ),
+                ]
               ),
             ],
           ),
@@ -98,6 +114,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => const NoticeWriteView(),
                   ),
+                  GoRoute(path: 'detail', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) {
+                    final item = state.extra as Notice;
+                    return NoticeDetailView(
+                      writer: item.teacher,
+                      timeText: item.timeText,
+                      title: item.title,
+                      content: item.content,
+                      onDelete: () {
+                        // TODO: 삭제 로직
+                      },
+                    );
+                  })
                 ],
               ),
             ],
