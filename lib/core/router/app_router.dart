@@ -8,6 +8,7 @@ import 'package:falletter_mobile_admin/presentation/inquiry/view/admin_register_
 import 'package:falletter_mobile_admin/presentation/inquiry/view/inquiry_view.dart';
 import 'package:falletter_mobile_admin/presentation/letter/view/letter_view.dart';
 import 'package:falletter_mobile_admin/presentation/notice/view/notice_view.dart';
+import 'package:falletter_mobile_admin/presentation/notice/view/notice_write_view.dart';
 import 'package:falletter_mobile_admin/presentation/signin/view/signin_view.dart';
 import 'package:falletter_mobile_admin/presentation/splash/view/splash_view.dart';
 import 'package:falletter_mobile_admin/presentation/students/view/students_view.dart';
@@ -42,7 +43,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Scaffold(
-            backgroundColor: FalletterColor.white,
+            backgroundColor: FalletterColor.background,
             appBar: const PreferredSize(
               preferredSize: Size.fromHeight(70),
               child: CustomAppBar(showBack: false, showLogout: true),
@@ -91,6 +92,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RouterPath.notice,
                 builder: (_, __) => const FalletterNoticeView(),
+                routes: [
+                  GoRoute(
+                    path: 'write',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const NoticeWriteView(),
+                  ),
+                ],
               ),
             ],
           ),
