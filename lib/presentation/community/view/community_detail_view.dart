@@ -1,9 +1,12 @@
 import 'package:falletter_mobile_admin/core/components/app_bar/custom_app_bar.dart';
-import 'package:falletter_mobile_admin/core/constants/color.dart';
+import 'package:falletter_mobile_admin/core/components/button/more_action_button.dart';
+import 'package:falletter_mobile_admin/core/components/card/detail_card.dart';
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
-import 'package:falletter_mobile_admin/presentation/community/widget/community_post_item.dart';
+import 'package:falletter_mobile_admin/core/constants/color.dart';
+import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/presentation/community/widget/comment_item.dart';
+import 'package:falletter_mobile_admin/presentation/community/widget/community_post_item.dart';
 import 'package:flutter/material.dart';
 
 class CommunityDetailView extends StatefulWidget {
@@ -31,7 +34,7 @@ class _CommunityDetailViewState extends State<CommunityDetailView> {
     super.initState();
     isPostDeleted = widget.post.deletedByAdmin;
     comments = List.generate(
-      5,
+      10,
       (i) => _CommentUi(
         author: '댓글 작성자 $i',
         timeText: '10분전',
@@ -52,6 +55,17 @@ class _CommunityDetailViewState extends State<CommunityDetailView> {
 
   @override
   Widget build(BuildContext context) {
+    final menuItems = MoreAction.buildItems<PostMenuAction>([
+      MoreActionItem<PostMenuAction>(value: PostMenuAction.warn, text: '경고'),
+      MoreActionItem<PostMenuAction>(value: PostMenuAction.ban, text: '정지'),
+      MoreActionItem<PostMenuAction>(
+        value: PostMenuAction.delete,
+        text: '삭제',
+        style: FalletterTextStyle.body3.copyWith(color: FalletterColor.red),
+        showDivider: false,
+      ),
+    ]);
+
     return Scaffold(
       backgroundColor: FalletterColor.background,
       body: SafeArea(
@@ -61,14 +75,31 @@ class _CommunityDetailViewState extends State<CommunityDetailView> {
             Expanded(
               child: ListView(
                 children: [
-                  CommunityPostItem(
-                    title: widget.post.title,
-                    preview: widget.post.preview,
-                    author: widget.post.author,
+                  DetailCard(
+                    writer: widget.post.author,
                     timeText: widget.post.timeText,
-                    commentCount: widget.post.commentCount,
-                    badge: isPostDeleted,
-                    onMenu: (action) {
+                    title: widget.post.title,
+                    content: widget.post.preview,
+                    badge: isPostDeleted
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: FalletterColor.red),
+                            ),
+                            child: Text(
+                              '관리자에 의해 삭제되었습니다',
+                              style: FalletterTextStyle.body4.copyWith(
+                                color: FalletterColor.red,
+                              ),
+                            ),
+                          )
+                        : null,
+                    menuItems: menuItems,
+                    onMenuSelected: (action) {
                       if (action == PostMenuAction.delete) {
                         setState(() => isPostDeleted = true);
                         widget.onDelete();
@@ -82,8 +113,8 @@ class _CommunityDetailViewState extends State<CommunityDetailView> {
                   const SizedBox(height: 6),
 
                   ...comments.asMap().entries.map((entry) {
-                    int idx = entry.key;
-                    var c = entry.value;
+                    final idx = entry.key;
+                    final c = entry.value;
                     return CommentItem(
                       author: c.author,
                       timeText: c.timeText,

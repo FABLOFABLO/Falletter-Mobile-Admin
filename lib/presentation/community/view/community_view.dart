@@ -1,8 +1,10 @@
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
+import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/presentation/community/view/community_detail_view.dart';
 import 'package:falletter_mobile_admin/presentation/community/widget/community_post_item.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class FalletterCommunityView extends StatefulWidget {
   const FalletterCommunityView({super.key});
@@ -72,20 +74,7 @@ class _FalletterCommunityViewState extends State<FalletterCommunityView> {
           badge: p.deletedByAdmin,
           onMenu: (action) => _onPostMenu(index, action),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => CommunityDetailView(
-                  post: posts[index],
-                  onDelete: () {
-                    setState(() {
-                      posts[index] = posts[index].copyWith(
-                        deletedByAdmin: true,
-                      );
-                    });
-                  },
-                ),
-              ),
-            );
+            context.push(RouterPath.communityDetail, extra: posts[index]);
           },
         );
       },
