@@ -18,12 +18,9 @@ class AdminRegisterView extends ConsumerStatefulWidget {
 }
 
 class _AdminRegisterViewState extends ConsumerState<AdminRegisterView> {
-  // info step controllers
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final verifyController = TextEditingController();
-
-  // password step controllers
   final pwController = TextEditingController();
   final pwConfirmController = TextEditingController();
 
@@ -78,10 +75,12 @@ class _AdminRegisterViewState extends ConsumerState<AdminRegisterView> {
     Widget? suffixIcon,
     required bool showError,
   }) {
-    final enabled =
-    _outline(showError ? FalletterColor.red : FalletterColor.middleWhite);
-    final focused =
-    _outline(showError ? FalletterColor.red : FalletterColor.black);
+    final enabled = _outline(
+      showError ? FalletterColor.red : FalletterColor.middleWhite,
+    );
+    final focused = _outline(
+      showError ? FalletterColor.red : FalletterColor.black,
+    );
 
     return InputDecoration(
       labelText: label,
@@ -101,30 +100,34 @@ class _AdminRegisterViewState extends ConsumerState<AdminRegisterView> {
     final state = ref.watch(adminRegisterProvider);
     final notifier = ref.read(adminRegisterProvider.notifier);
 
-    return Scaffold(
-      body: SafeArea(
-        child: switch (state.step) {
-          AdminRegisterStep.info => AdminRegisterInfoView(
-            state: state,
-            notifier: notifier,
-            nameController: nameController,
-            emailController: emailController,
-            verifyController: verifyController,
-            decorationBuilder: _decoration,
-            outlinedButtonBuilder: outlinedCustomButton,
-          ),
-          AdminRegisterStep.password => AdminRegisterPasswordView(
-            state: state,
-            notifier: notifier,
-            pwController: pwController,
-            pwConfirmController: pwConfirmController,
-            decorationBuilder: _decoration,
-          ),
-          AdminRegisterStep.done => AdminRegisterDoneView(
-            onBackToSplash: () {context.go('/splash');
-            },
-          ),
-        },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: SafeArea(
+          child: switch (state.step) {
+            AdminRegisterStep.info => AdminRegisterInfoView(
+              state: state,
+              notifier: notifier,
+              nameController: nameController,
+              emailController: emailController,
+              verifyController: verifyController,
+              decorationBuilder: _decoration,
+              outlinedButtonBuilder: outlinedCustomButton,
+            ),
+            AdminRegisterStep.password => AdminRegisterPasswordView(
+              state: state,
+              notifier: notifier,
+              pwController: pwController,
+              pwConfirmController: pwConfirmController,
+              decorationBuilder: _decoration,
+            ),
+            AdminRegisterStep.done => AdminRegisterDoneView(
+              onBackToSplash: () {
+                context.go('/splash');
+              },
+            ),
+          },
+        ),
       ),
     );
   }

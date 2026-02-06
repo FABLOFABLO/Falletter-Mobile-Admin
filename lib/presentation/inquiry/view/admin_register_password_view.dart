@@ -37,86 +37,89 @@ class AdminRegisterPasswordView extends StatelessWidget {
         state.passwordConfirm.trim().isNotEmpty &&
         state.password != state.passwordConfirm;
 
-    return Column(
-      children: [
-        CustomAppBar(
-          showBack: true,
-          showLogout: false,
-          onBack: notifier.backToInfo,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('어드민 등록', style: FalletterTextStyle.title2),
-              const SizedBox(height: 42),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Column(
+        children: [
+          CustomAppBar(
+            showBack: true,
+            showLogout: false,
+            onBack: notifier.backToInfo,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('어드민 등록', style: FalletterTextStyle.title2),
+                const SizedBox(height: 42),
 
-              CustomTextFormField(
-                controller: pwController,
-                obscureText: state.obscurePassword,
-                textInputAction: TextInputAction.next,
-                decoration: decorationBuilder(
-                  label: '비밀번호',
-                  hint: '비밀번호를 입력해주세요.',
-                  suffixIcon: state.obscurePassword
-                      ? FieldIcon.hidePwIcon(
-                          onPressed: notifier.toggleObscurePassword,
-                        )
-                      : FieldIcon.showPwIcon(
-                          onPressed: notifier.toggleObscurePassword,
-                        ),
-                  showError: showError && state.password.trim().isEmpty,
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              CustomTextFormField(
-                controller: pwConfirmController,
-                obscureText: state.obscurePasswordConfirm,
-                textInputAction: TextInputAction.done,
-                onFieldSubmitted: (_) =>
-                    state.canRegister ? notifier.register() : null,
-                decoration: decorationBuilder(
-                  label: '비밀번호 확인',
-                  hint: '비밀번호를 입력해주세요.',
-                  suffixIcon: state.obscurePasswordConfirm
-                      ? FieldIcon.hidePwIcon(
-                          onPressed: notifier.toggleObscurePasswordConfirm,
-                        )
-                      : FieldIcon.showPwIcon(
-                          onPressed: notifier.toggleObscurePasswordConfirm,
-                        ),
-                  showError:
-                      (showError && state.passwordConfirm.trim().isEmpty) ||
-                      (showError && pwMismatch),
-                ),
-              ),
-
-              if (showError && pwMismatch) ...[
-                const SizedBox(height: 10),
-                Text(
-                  '비밀번호가 일치하지 않습니다.',
-                  style: FalletterTextStyle.label.copyWith(
-                    color: FalletterColor.red,
-                    fontWeight: FontWeight.w400,
+                CustomTextFormField(
+                  controller: pwController,
+                  obscureText: state.obscurePassword,
+                  textInputAction: TextInputAction.next,
+                  decoration: decorationBuilder(
+                    label: '비밀번호',
+                    hint: '비밀번호를 입력해주세요.',
+                    suffixIcon: state.obscurePassword
+                        ? FieldIcon.hidePwIcon(
+                            onPressed: notifier.toggleObscurePassword,
+                          )
+                        : FieldIcon.showPwIcon(
+                            onPressed: notifier.toggleObscurePassword,
+                          ),
+                    showError: showError && state.password.trim().isEmpty,
                   ),
                 ),
-              ],
-            ],
-          ),
-        ),
-        const Spacer(),
 
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: CustomElevatedButton(
-            onPressed: state.canRegister ? notifier.register : null,
-            child: const Text('등록하기'),
+                const SizedBox(height: 32),
+
+                CustomTextFormField(
+                  controller: pwConfirmController,
+                  obscureText: state.obscurePasswordConfirm,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) =>
+                      state.canRegister ? notifier.register() : null,
+                  decoration: decorationBuilder(
+                    label: '비밀번호 확인',
+                    hint: '비밀번호를 입력해주세요.',
+                    suffixIcon: state.obscurePasswordConfirm
+                        ? FieldIcon.hidePwIcon(
+                            onPressed: notifier.toggleObscurePasswordConfirm,
+                          )
+                        : FieldIcon.showPwIcon(
+                            onPressed: notifier.toggleObscurePasswordConfirm,
+                          ),
+                    showError:
+                        (showError && state.passwordConfirm.trim().isEmpty) ||
+                        (showError && pwMismatch),
+                  ),
+                ),
+
+                if (showError && pwMismatch) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    '비밀번호가 일치하지 않습니다.',
+                    style: FalletterTextStyle.label.copyWith(
+                      color: FalletterColor.red,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
-      ],
+          const Spacer(),
+
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: CustomElevatedButton(
+              onPressed: state.canRegister ? notifier.register : null,
+              child: const Text('등록하기'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
