@@ -10,4 +10,6 @@ abstract class RouterPath {
   static const inquiry = "/inquiry";
   static const signin = "/signin";
   static const register = "/register";
+
+  static const noticeWrite = '/notice/write';
 }
