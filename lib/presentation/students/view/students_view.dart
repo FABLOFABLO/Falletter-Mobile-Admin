@@ -17,7 +17,7 @@ class FalletterStudentsView extends StatefulWidget {
 
 class _FalletterStudentsViewState extends State<FalletterStudentsView> {
   final _searchController = TextEditingController();
-  int? _selectedGrade;
+  final Set<int> _selectedGrades = {};
 
   late final List<_StudentUi> _allStudents = [
     _StudentUi(
@@ -32,48 +32,49 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
         SanctionSummary(type: '경고', dateText: '12월 15일', countText: '+1'),
       ],
     ),
-    _StudentUi(
+    const _StudentUi(
       grade: 1,
       numberName: '1300 이강희',
       isFemale: false,
-      sanctions: const [],
+      sanctions: [],
     ),
-    _StudentUi(
+    const _StudentUi(
       grade: 1,
       numberName: '1403 김지윤',
       isFemale: true,
-      sanctions: const [],
+      sanctions: [],
     ),
-    _StudentUi(
+    const _StudentUi(
       grade: 1,
       numberName: '1300 권수현',
       isFemale: false,
-      sanctions: const [],
+      sanctions: [],
     ),
-    _StudentUi(
+    const _StudentUi(
       grade: 2,
       numberName: '2400 최승우',
       isFemale: true,
-      sanctions: const [],
+      sanctions: [],
     ),
-    _StudentUi(
+    const _StudentUi(
       grade: 3,
       numberName: '3400 최승우',
       isFemale: true,
-      sanctions: const [],
+      sanctions: [],
     ),
-    _StudentUi(
+    const _StudentUi(
       grade: 3,
       numberName: '3400 최승우',
       isFemale: true,
-      sanctions: const [],
+      sanctions: [],
     ),
   ];
 
   List<_StudentUi> get _filtered {
     final q = _searchController.text.trim();
     return _allStudents.where((s) {
-      final byGrade = _selectedGrade == null ? true : s.grade == _selectedGrade;
+      final byGrade =
+      _selectedGrades.isEmpty ? true : _selectedGrades.contains(s.grade);
       final byQuery = q.isEmpty ? true : s.numberName.contains(q);
       return byGrade && byQuery;
     }).toList();
@@ -89,10 +90,9 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (_) => _SanctionDetailModal(
+      builder: (_) => const _SanctionDetailModal(
         dateText: '12월 15일',
-        content:
-        'Lorem ipsum mi fringilla massa at purus fermentum lectus rhoncus lectus rhoncus\n'
+        content: 'Lorem ipsum mi fringilla massa at purus fermentum lectus rhoncus lectus rhoncus\n'
             'nunc sit nam ut et nunc lectus elit elit urna\n'
             'leo placerat quis elit ipsum sed amet nec\n'
             'nunc in viverra leo vitae odio habitant quis\n'
@@ -124,85 +124,105 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
   Widget build(BuildContext context) {
     final items = _filtered;
 
-    return Scaffold(
-      backgroundColor: FalletterColor.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomTextFormField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: '학생 검색',
-                      contentPadding: const EdgeInsets.all(12),
-                      suffixIcon: const Icon(
-                        Symbols.search,
-                        size: 22,
-                        color: FalletterColor.gray600,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: FalletterColor.background,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomTextFormField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        hintText: '학생 검색',
+                        contentPadding: EdgeInsets.all(12),
+                        suffixIcon: Icon(
+                          Symbols.search,
+                          size: 22,
+                          color: FalletterColor.gray600,
+                        ),
                       ),
+                      onChanged: (_) => setState(() {}),
                     ),
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      const Spacer(),
-                      PopupMenuButton<int>(
-                        offset: const Offset(0, 44),
-                        color: FalletterColor.gray100,
-                        elevation: 0,
-                        itemBuilder: (context) => MoreAction.buildItems<int>([
-                          const MoreActionItem(value: 1, text: '1학년'),
-                          const MoreActionItem(value: 2, text: '2학년'),
-                          const MoreActionItem(value: 3, text: '3학년'),
-                        ]),
-                        onSelected: (v) => setState(() => _selectedGrade = v),
-                        child: SizedBox(
-                          width: 40,
-                          height: 44,
-                          child: const Center(
-                            child: Icon(
-                              Symbols.tune,
-                              size: 22,
-                              color: FalletterColor.gray800,
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: (_selectedGrades.toList()..sort())
+                                .map(
+                                  (g) => _GradeChip(
+                                text: '${g}학년',
+                                onRemove: () => setState(
+                                      () => _selectedGrades.remove(g),
+                                ),
+                              ),
+                            )
+                                .toList(),
+                          ),
+                        ),
+                        PopupMenuButton<int>(
+                          offset: const Offset(0, 44),
+                          color: FalletterColor.gray100,
+                          elevation: 0,
+                          itemBuilder: (context) =>
+                              MoreAction.buildItems<int>([
+                                const MoreActionItem(value: 1, text: '1학년'),
+                                const MoreActionItem(value: 2, text: '2학년'),
+                                const MoreActionItem(value: 3, text: '3학년'),
+                              ]),
+                          onSelected: (v) {
+                            setState(() {
+                              if (_selectedGrades.contains(v)) {
+                                _selectedGrades.remove(v);
+                              } else {
+                                _selectedGrades.add(v);
+                              }
+                            });
+                          },
+                          child: SizedBox(
+                            width: 40,
+                            height: 44,
+                            child: const Center(
+                              child: Icon(
+                                Symbols.tune,
+                                size: 22,
+                                color: FalletterColor.gray800,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  if (_selectedGrade != null) ...[
-                    const SizedBox(height: 10),
-                    _GradeChip(
-                      text: '${_selectedGrade}학년',
-                      onRemove: () => setState(() => _selectedGrade = null),
+                      ],
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final s = items[index];
+              Expanded(
+                child: ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final s = items[index];
 
-                  return StudentListItem(
-                    numberName: s.numberName,
-                    genderLabel: s.isFemale ? '여학생' : '남학생',
-                    isFemale: s.isFemale,
-                    sanctions: s.sanctions,
-                    onTapDetail: () => _openSanctionDetailModal(context, s),
-                    onMenu: _onStudentMenu,
-                  );
-                },
+                    return StudentListItem(
+                      numberName: s.numberName,
+                      genderLabel: s.isFemale ? '여학생' : '남학생',
+                      isFemale: s.isFemale,
+                      sanctions: s.sanctions,
+                      onTapDetail: () => _openSanctionDetailModal(context, s),
+                      onMenu: _onStudentMenu,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -227,11 +247,16 @@ class _GradeChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(text, style: FalletterTextStyle.body4.copyWith(color: FalletterColor.black)),
+          Text(
+            text,
+            style:
+            FalletterTextStyle.body4
+          ),
           const SizedBox(width: 8),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Symbols.close, size: 16, color: FalletterColor.black),
+            child: const Icon(Symbols.x_circle,
+                size: 16, color: FalletterColor.red),
           ),
         ],
       ),
@@ -273,7 +298,7 @@ class _SanctionDetailModal extends StatelessWidget {
                 children: [
                   Text(
                     '제재 내역',
-                    style: FalletterTextStyle.body3.copyWith(color: FalletterColor.black),
+                    style: FalletterTextStyle.body3,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 14),
@@ -283,7 +308,7 @@ class _SanctionDetailModal extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       content,
-                      style: FalletterTextStyle.body4.copyWith(color: FalletterColor.black),
+                      style: FalletterTextStyle.body4
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -291,7 +316,8 @@ class _SanctionDetailModal extends StatelessWidget {
                   const SizedBox(height: 14),
                   Text(
                     dateText,
-                    style: FalletterTextStyle.body4.copyWith(color: FalletterColor.gray700),
+                    style: FalletterTextStyle.body4
+                        .copyWith(color: FalletterColor.gray700),
                   ),
                 ],
               ),
@@ -309,7 +335,8 @@ class _SanctionDetailModal extends StatelessWidget {
                   color: FalletterColor.gray400,
                 ),
                 child: const Center(
-                  child: Icon(Symbols.close, color: FalletterColor.white, size: 28),
+                  child: Icon(Symbols.close,
+                      color: FalletterColor.white, size: 28),
                 ),
               ),
             ),
