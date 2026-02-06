@@ -19,7 +19,7 @@ class _NoticeWriteViewState extends ConsumerState<NoticeWriteView> {
 
   bool get _canSave =>
       _titleController.text.trim().isNotEmpty &&
-          _contentController.text.trim().isNotEmpty;
+      _contentController.text.trim().isNotEmpty;
 
   @override
   void initState() {
@@ -41,17 +41,21 @@ class _NoticeWriteViewState extends ConsumerState<NoticeWriteView> {
   }
 
   void _onSave() {
-    ref.read(noticeProvider.notifier).addNotice(
-      title: _titleController.text,
-      content: _contentController.text,
-      teacher: '관리자', /// 연동 시 수정
-    );
+    ref
+        .read(noticeProvider.notifier)
+        .addNotice(
+          title: _titleController.text,
+          content: _contentController.text,
+          teacher: '관리자', /// 연동 시 수정
+        );
 
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final viewInsetsBottom = MediaQuery.of(context).viewInsets.bottom;
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusScope.of(context).unfocus(),
@@ -59,42 +63,59 @@ class _NoticeWriteViewState extends ConsumerState<NoticeWriteView> {
         backgroundColor: FalletterColor.background,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
-          child: Column(
+          child: Stack(
             children: [
-              const CustomAppBar(showBack: true, showLogout: false),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      CustomTextFormField(
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                          hintText: '제목 입력',
-                          contentPadding: EdgeInsets.all(14),
-                        ),
+              Column(
+                children: [
+                  const CustomAppBar(showBack: true, showLogout: false),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          CustomTextFormField(
+                            controller: _titleController,
+                            decoration: const InputDecoration(
+                              hintText: '제목 입력',
+                              contentPadding: EdgeInsets.all(14),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          CustomTextFormField(
+                            controller: _contentController,
+                            maxLines: 23,
+                            textAlignVertical: TextAlignVertical.top,
+                            decoration: const InputDecoration(
+                              hintText: '내용입력',
+                              contentPadding: EdgeInsets.all(14),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 32),
-                      CustomTextFormField(
-                        controller: _contentController,
-                        maxLines: 23,
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: const InputDecoration(
-                          hintText: '내용입력',
-                          contentPadding: EdgeInsets.all(14),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 100),
-                child: CustomElevatedButton(
-                  onPressed: _canSave ? _onSave : null,
-                  child: const Text('저장'),
+
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: AnimatedPadding(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOut,
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    viewInsetsBottom + 20,
+                  ),
+                  child: CustomElevatedButton(
+                    onPressed: _canSave ? _onSave : null,
+                    child: const Text('저장'),
+                  ),
                 ),
               ),
             ],
