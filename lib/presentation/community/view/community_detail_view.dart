@@ -5,56 +5,117 @@ import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart'
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/presentation/community/provider/community_provider.dart';
 import 'package:falletter_mobile_admin/presentation/community/widget/comment_item.dart';
 import 'package:falletter_mobile_admin/presentation/community/widget/community_post_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CommunityDetailView extends StatefulWidget {
-  final dynamic post;
-  final void Function(PostMenuAction action)? onMenu;
-  final VoidCallback onDelete;
+class CommunityDetailView extends ConsumerWidget {
+  final String postId;
 
   const CommunityDetailView({
     super.key,
-    required this.post,
-    this.onMenu,
-    required this.onDelete,
+    required this.postId,
   });
 
-  @override
-  State<CommunityDetailView> createState() => _CommunityDetailViewState();
-}
-
-class _CommunityDetailViewState extends State<CommunityDetailView> {
-  late List<_CommentUi> comments;
-  late bool isPostDeleted;
-
-  @override
-  void initState() {
-    super.initState();
-    isPostDeleted = widget.post.deletedByAdmin;
-    comments = List.generate(
-      10,
-      (i) => _CommentUi(
-        author: '댓글 작성자 $i',
-        timeText: '10분전',
-        content: '댓글 내용입니다.',
-      ),
-    );
-  }
-
-  void _openBanModal(BuildContext context) {
+  void _openBanModal(BuildContext context, WidgetRef ref, {String? commentId}) {
     showDialog(
       context: context,
       builder: (_) => DefaultModal(
         model: DefaultModalUiModel.ban(),
-        onConfirmBan: (days, reason) => Navigator.of(context).pop(),
+        onConfirmBan: (days, reason) {
+          if (commentId != null) {
+            ref
+                .read(communityProvider.notifier)
+                .updateComment(postId, commentId, banned: true);
+          } else {
+            ref
+                .read(communityProvider.notifier)
+                .updatePost(postId, banned: true);
+          }
+        },
+        onConfirmLogout: null,
       ),
     );
   }
 
+  void _onPostMenu(BuildContext context, WidgetRef ref, PostMenuAction action) {
+    switch (action) {
+      case PostMenuAction.warn:
+        ref.read(communityProvider.notifier).updatePost(postId, warned: true);
+        break;
+      case PostMenuAction.ban:
+        _openBanModal(context, ref);
+        break;
+      case PostMenuAction.delete:
+        ref
+            .read(communityProvider.notifier)
+            .updatePost(postId, deletedByAdmin: true);
+        break;
+    }
+  }
+
+  void _onCommentMenu(
+    BuildContext context,
+    WidgetRef ref,
+    String commentId,
+    CommentMenuAction action,
+  ) {
+    switch (action) {
+      case CommentMenuAction.warn:
+        ref
+            .read(communityProvider.notifier)
+            .updateComment(postId, commentId, warned: true);
+        break;
+      case CommentMenuAction.ban:
+        _openBanModal(context, ref, commentId: commentId);
+        break;
+      case CommentMenuAction.delete:
+        ref
+            .read(communityProvider.notifier)
+            .updateComment(postId, commentId, deletedByAdmin: true);
+        break;
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final communityState = ref.watch(communityProvider);
+    final post = communityState.posts.firstWhere(
+      (p) => p.id == postId,
+      orElse: () => PostUi(
+        id: '',
+        title: '',
+        preview: '',
+        author: '',
+        timeText: '',
+        commentCount: 0,
+      ),
+    );
+    final comments = communityState.comments[postId] ?? [];
+
+    if (post.id.isEmpty) {
+      return Scaffold(
+        backgroundColor: FalletterColor.background,
+        body: SafeArea(
+          child: Column(
+            children: [
+              CustomAppBar(showBack: true, showLogout: false),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    '게시글을 찾을 수 없습니다.',
+                    style: FalletterTextStyle.body3,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final menuItems = MoreAction.buildItems<PostMenuAction>([
       MoreActionItem<PostMenuAction>(value: PostMenuAction.warn, text: '경고'),
       MoreActionItem<PostMenuAction>(value: PostMenuAction.ban, text: '정지'),
@@ -76,11 +137,11 @@ class _CommunityDetailViewState extends State<CommunityDetailView> {
               child: ListView(
                 children: [
                   DetailCard(
-                    writer: widget.post.author,
-                    timeText: widget.post.timeText,
-                    title: widget.post.title,
-                    content: widget.post.preview,
-                    badge: isPostDeleted
+                    writer: post.author,
+                    timeText: post.timeText,
+                    title: post.title,
+                    content: post.preview,
+                    badge: post.deletedByAdmin
                         ? Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -99,38 +160,18 @@ class _CommunityDetailViewState extends State<CommunityDetailView> {
                           )
                         : null,
                     menuItems: menuItems,
-                    onMenuSelected: (action) {
-                      if (action == PostMenuAction.delete) {
-                        setState(() => isPostDeleted = true);
-                        widget.onDelete();
-                      } else if (action == PostMenuAction.ban) {
-                        _openBanModal(context);
-                      }
-                      widget.onMenu?.call(action);
-                    },
+                    onMenuSelected: (action) =>
+                        _onPostMenu(context, ref, action),
                   ),
-
                   const SizedBox(height: 6),
-
-                  ...comments.asMap().entries.map((entry) {
-                    final idx = entry.key;
-                    final c = entry.value;
+                  ...comments.map((comment) {
                     return CommentItem(
-                      author: c.author,
-                      timeText: c.timeText,
-                      content: c.content,
-                      badge: c.deletedByAdmin,
-                      onMenu: (action) {
-                        if (action == CommentMenuAction.delete) {
-                          setState(() {
-                            comments[idx] = comments[idx].copyWith(
-                              deletedByAdmin: true,
-                            );
-                          });
-                        } else if (action == CommentMenuAction.ban) {
-                          _openBanModal(context);
-                        }
-                      },
+                      author: comment.author,
+                      timeText: comment.timeText,
+                      content: comment.content,
+                      badge: comment.deletedByAdmin,
+                      onMenu: (action) =>
+                          _onCommentMenu(context, ref, comment.id, action),
                     );
                   }),
                 ],
@@ -139,29 +180,6 @@ class _CommunityDetailViewState extends State<CommunityDetailView> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _CommentUi {
-  final String author;
-  final String timeText;
-  final String content;
-  final bool deletedByAdmin;
-
-  const _CommentUi({
-    required this.author,
-    required this.timeText,
-    required this.content,
-    this.deletedByAdmin = false,
-  });
-
-  _CommentUi copyWith({bool? deletedByAdmin}) {
-    return _CommentUi(
-      author: author,
-      timeText: timeText,
-      content: content,
-      deletedByAdmin: deletedByAdmin ?? this.deletedByAdmin,
     );
   }
 }

@@ -1,66 +1,46 @@
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
-import 'package:falletter_mobile_admin/presentation/community/view/community_detail_view.dart';
+import 'package:falletter_mobile_admin/presentation/community/provider/community_provider.dart';
 import 'package:falletter_mobile_admin/presentation/community/widget/community_post_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class FalletterCommunityView extends StatefulWidget {
+class FalletterCommunityView extends ConsumerWidget {
   const FalletterCommunityView({super.key});
 
-  @override
-  State<FalletterCommunityView> createState() => _FalletterCommunityViewState();
-}
-
-class _FalletterCommunityViewState extends State<FalletterCommunityView> {
-  late List<_PostUi> posts;
-
-  @override
-  void initState() {
-    super.initState();
-    posts = List.generate(
-      8,
-      (i) => _PostUi(
-        title: 'Title $i',
-        preview: 'Text content...',
-        author: '1411 이승현',
-        timeText: '45분전',
-        commentCount: 10,
-      ),
-    );
-  }
-
-  void _openBanModal() {
+  void _openBanModal(BuildContext context, WidgetRef ref, String postId) {
     showDialog(
       context: context,
       builder: (_) => DefaultModal(
         model: DefaultModalUiModel.ban(),
         onConfirmBan: (days, reason) {
-          /// TODO: API 연결 시 여기서 요청
+          ref.read(communityProvider.notifier).updatePost(postId, banned: true);
         },
         onConfirmLogout: null,
       ),
     );
   }
 
-  void _onPostMenu(int index, PostMenuAction action) {
+  void _onPostMenu(BuildContext context, WidgetRef ref, String postId, PostMenuAction action) {
     switch (action) {
       case PostMenuAction.warn:
+        ref.read(communityProvider.notifier).updatePost(postId, warned: true);
         break;
       case PostMenuAction.ban:
-        _openBanModal();
+        _openBanModal(context, ref, postId);
         break;
       case PostMenuAction.delete:
-        setState(() {
-          posts[index] = posts[index].copyWith(deletedByAdmin: true);
-        });
+        ref.read(communityProvider.notifier).updatePost(postId, deletedByAdmin: true);
         break;
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final posts = ref.watch(communityProvider).posts;
+
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, index) {
@@ -72,41 +52,12 @@ class _FalletterCommunityViewState extends State<FalletterCommunityView> {
           timeText: p.timeText,
           commentCount: p.commentCount,
           badge: p.deletedByAdmin,
-          onMenu: (action) => _onPostMenu(index, action),
+          onMenu: (action) => _onPostMenu(context, ref, p.id, action),
           onTap: () {
-            context.push(RouterPath.communityDetail, extra: posts[index]);
+            context.push(RouterPath.communityDetail, extra: p.id);
           },
         );
       },
-    );
-  }
-}
-
-class _PostUi {
-  final String title;
-  final String preview;
-  final String author;
-  final String timeText;
-  final int commentCount;
-  final bool deletedByAdmin;
-
-  const _PostUi({
-    required this.title,
-    required this.preview,
-    required this.author,
-    required this.timeText,
-    required this.commentCount,
-    this.deletedByAdmin = false,
-  });
-
-  _PostUi copyWith({bool? deletedByAdmin}) {
-    return _PostUi(
-      title: title,
-      preview: preview,
-      author: author,
-      timeText: timeText,
-      commentCount: commentCount,
-      deletedByAdmin: deletedByAdmin ?? this.deletedByAdmin,
     );
   }
 }

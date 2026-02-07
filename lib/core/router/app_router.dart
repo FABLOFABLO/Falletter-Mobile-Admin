@@ -84,10 +84,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'detail',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) {
-                      final post = state.extra;
+                      final postId = state.extra as String;
                       return CommunityDetailView(
-                        post: post,
-                        onDelete: () {},
+                        postId: postId,
                       );
                     },
                   ),
