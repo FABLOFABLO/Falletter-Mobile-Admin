@@ -56,7 +56,7 @@ class LetterLogItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          BadgeChip(text: '레터 관리', badgeColor: FalletterColor.red),
+          BadgeChip(text: '검사 반려', badgeColor: FalletterColor.red),
         ],
       ),
       body: Text(fromTo, style: FalletterTextStyle.subTitle2),
