@@ -4,6 +4,7 @@ import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_mo
 import 'package:falletter_mobile_admin/core/components/text_form_field/text_form_field.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/presentation/students/model/sanction_summary.dart';
 import 'package:falletter_mobile_admin/presentation/students/widget/student_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -73,8 +74,9 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
   List<_StudentUi> get _filtered {
     final q = _searchController.text.trim();
     return _allStudents.where((s) {
-      final byGrade =
-      _selectedGrades.isEmpty ? true : _selectedGrades.contains(s.grade);
+      final byGrade = _selectedGrades.isEmpty
+          ? true
+          : _selectedGrades.contains(s.grade);
       final byQuery = q.isEmpty ? true : s.numberName.contains(q);
       return byGrade && byQuery;
     }).toList();
@@ -92,7 +94,8 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
       barrierDismissible: true,
       builder: (_) => const _SanctionDetailModal(
         dateText: '12월 15일',
-        content: 'Lorem ipsum mi fringilla massa at purus fermentum lectus rhoncus lectus rhoncus\n'
+        content:
+            'Lorem ipsum mi fringilla massa at purus fermentum lectus rhoncus lectus rhoncus\n'
             'nunc sit nam ut et nunc lectus elit elit urna\n'
             'leo placerat quis elit ipsum sed amet nec\n'
             'nunc in viverra leo vitae odio habitant quis\n'
@@ -159,12 +162,12 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
                             children: (_selectedGrades.toList()..sort())
                                 .map(
                                   (g) => _GradeChip(
-                                text: '${g}학년',
-                                onRemove: () => setState(
+                                    text: '${g}학년',
+                                    onRemove: () => setState(
                                       () => _selectedGrades.remove(g),
-                                ),
-                              ),
-                            )
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                           ),
                         ),
@@ -172,12 +175,11 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
                           offset: const Offset(0, 44),
                           color: FalletterColor.gray100,
                           elevation: 0,
-                          itemBuilder: (context) =>
-                              MoreAction.buildItems<int>([
-                                const MoreActionItem(value: 1, text: '1학년'),
-                                const MoreActionItem(value: 2, text: '2학년'),
-                                const MoreActionItem(value: 3, text: '3학년'),
-                              ]),
+                          itemBuilder: (context) => MoreAction.buildItems<int>([
+                            const MoreActionItem(value: 1, text: '1학년'),
+                            const MoreActionItem(value: 2, text: '2학년'),
+                            const MoreActionItem(value: 3, text: '3학년'),
+                          ]),
                           onSelected: (v) {
                             setState(() {
                               if (_selectedGrades.contains(v)) {
@@ -247,16 +249,15 @@ class _GradeChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            text,
-            style:
-            FalletterTextStyle.body4
-          ),
+          Text(text, style: FalletterTextStyle.body4),
           const SizedBox(width: 8),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Symbols.x_circle,
-                size: 16, color: FalletterColor.red),
+            child: const Icon(
+              Symbols.x_circle,
+              size: 16,
+              color: FalletterColor.red,
+            ),
           ),
         ],
       ),
@@ -268,10 +269,7 @@ class _SanctionDetailModal extends StatelessWidget {
   final String content;
   final String dateText;
 
-  const _SanctionDetailModal({
-    required this.content,
-    required this.dateText,
-  });
+  const _SanctionDetailModal({required this.content, required this.dateText});
 
   @override
   Widget build(BuildContext context) {
@@ -306,18 +304,16 @@ class _SanctionDetailModal extends StatelessWidget {
                   const SizedBox(height: 14),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      content,
-                      style: FalletterTextStyle.body4
-                    ),
+                    child: Text(content, style: FalletterTextStyle.body4),
                   ),
                   const SizedBox(height: 18),
                   divider,
                   const SizedBox(height: 14),
                   Text(
                     dateText,
-                    style: FalletterTextStyle.body4
-                        .copyWith(color: FalletterColor.gray700),
+                    style: FalletterTextStyle.body4.copyWith(
+                      color: FalletterColor.gray700,
+                    ),
                   ),
                 ],
               ),
@@ -335,8 +331,11 @@ class _SanctionDetailModal extends StatelessWidget {
                   color: FalletterColor.gray400,
                 ),
                 child: const Center(
-                  child: Icon(Symbols.close,
-                      color: FalletterColor.white, size: 28),
+                  child: Icon(
+                    Symbols.close,
+                    color: FalletterColor.white,
+                    size: 28,
+                  ),
                 ),
               ),
             ),

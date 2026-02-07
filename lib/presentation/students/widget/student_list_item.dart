@@ -1,11 +1,15 @@
 import 'package:falletter_mobile_admin/core/components/button/more_action_button.dart';
-import 'package:falletter_mobile_admin/core/components/card/base_card_list.dart';
 import 'package:falletter_mobile_admin/core/components/card/card_atoms.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/presentation/students/model/sanction_summary.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 enum StudentMenuAction { warn, ban }
+
+const EdgeInsets _kCardPadding20 = EdgeInsets.all(20);
+const double _kCardRadius8 = 8;
 
 class StudentListItem extends StatefulWidget {
   final String numberName;
@@ -39,194 +43,78 @@ class _StudentListItemState extends State<StudentListItem> {
       badgeColor: widget.isFemale ? FalletterColor.red : FalletterColor.blue,
     );
 
-    return BaseCardList(
-      onTap: () => setState(() => _expanded = !_expanded),
-      leading: const Profile(),
-      title: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(widget.numberName, style: FalletterTextStyle.title3),
-          const SizedBox(width: 8),
-          badgeChip,
-        ],
-      ),
-      menuItems: MoreAction.buildItems<StudentMenuAction>([
-        const MoreActionItem(value: StudentMenuAction.warn, text: '경고'),
-        const MoreActionItem(value: StudentMenuAction.ban, text: '정지'),
-      ]),
-      onMenuSelected: (v) {
-        if (v is StudentMenuAction) {
-          widget.onMenu?.call(v);
-        }
-      },
-      body: _expanded
-          ? _SanctionPager(
-        sanctions: widget.sanctions,
-        onTapDetail: widget.onTapDetail,
-      )
-          : const SizedBox.shrink(),
-    );
-  }
-}
-
-class SanctionSummary {
-  final String type;
-  final String dateText;
-  final String? countText;
-
-  const SanctionSummary({
-    required this.type,
-    required this.dateText,
-    this.countText,
-  });
-}
-
-class _SanctionPager extends StatefulWidget {
-  final List<SanctionSummary> sanctions;
-  final VoidCallback? onTapDetail;
-
-  const _SanctionPager({
-    required this.sanctions,
-    this.onTapDetail,
-  });
-
-  @override
-  State<_SanctionPager> createState() => _SanctionPagerState();
-}
-
-class _SanctionPagerState extends State<_SanctionPager> {
-  late final PageController _controller = PageController();
-  int _page = 0;
-
-  List<List<SanctionSummary>> _chunk(List<SanctionSummary> list, int size) {
-    if (list.isEmpty) return const [];
-    final result = <List<SanctionSummary>>[];
-    for (var i = 0; i < list.length; i += size) {
-      result.add(list.sublist(i, (i + size).clamp(0, list.length)));
-    }
-    return result;
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final sanctions = widget.sanctions;
-
-    if (sanctions.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 50),
-          child: Text(
-            '제재 내역이 없습니다.',
-            style: FalletterTextStyle.body4.copyWith(
-              color: FalletterColor.gray600,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(_kCardRadius8),
+        child: InkWell(
+          onTap: () => setState(() => _expanded = !_expanded),
+          borderRadius: BorderRadius.circular(_kCardRadius8),
+          child: Container(
+            padding: _kCardPadding20,
+            decoration: BoxDecoration(
+              color: FalletterColor.middleWhite,
+              borderRadius: BorderRadius.circular(_kCardRadius8),
             ),
-          ),
-        ),
-      );
-    }
-
-    final pages = _chunk(sanctions, 4);
-
-    return Column(
-      children: [
-        SizedBox(
-          height: 200,
-          width: double.infinity,
-          child: PageView.builder(
-            controller: _controller,
-            itemCount: pages.length,
-            onPageChanged: (i) => setState(() => _page = i),
-            itemBuilder: (_, pageIndex) {
-              final list = pages[pageIndex];
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: list.map((s) {
-                  final isBan = s.type == '정지';
-                  final rightWidget = isBan
-                      ? GestureDetector(
-                    onTap: widget.onTapDetail,
-                    behavior: HitTestBehavior.opaque,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        '내역보기',
-                        style: FalletterTextStyle.body4.copyWith(
-                          decoration: TextDecoration.underline,
-                          decorationColor: FalletterColor.gray600,
-                          color: FalletterColor.gray600,
-                        ),
-                      ),
-                    ),
-                  )
-                      : (s.countText != null)
-                      ? Text(
-                    s.countText!,
-                    style: FalletterTextStyle.body4.copyWith(
-                      color: FalletterColor.red,
-                    ),
-                  )
-                      : const SizedBox.shrink();
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Profile(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                s.type,
-                                style: FalletterTextStyle.body3.copyWith(
-                                  color: isBan
-                                      ? FalletterColor.red
-                                      : FalletterColor.yellow,
-                                ),
-                              ),
-                              const Spacer(),
-                              rightWidget,
-                            ],
-                          ),
-                          const SizedBox(height: 2),
                           Text(
-                            s.dateText,
-                            style: FalletterTextStyle.body4.copyWith(
-                              color: FalletterColor.gray600,
-                            ),
+                            widget.numberName,
+                            style: FalletterTextStyle.title3,
                           ),
+                          const SizedBox(width: 8),
+                          badgeChip,
                         ],
                       ),
                     ),
-                  );
-                }).toList(),
-              );
-            },
+                    const SizedBox(width: 8),
+                    PopupMenuButton<StudentMenuAction>(
+                      color: FalletterColor.middleWhite,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(_kCardRadius8),
+                      ),
+                      elevation: 0,
+                      itemBuilder: (_) =>
+                          MoreAction.buildItems<StudentMenuAction>([
+                            const MoreActionItem(
+                              value: StudentMenuAction.warn,
+                              text: '경고',
+                            ),
+                            const MoreActionItem(
+                              value: StudentMenuAction.ban,
+                              text: '정지',
+                            ),
+                          ]),
+                      onSelected: (v) => widget.onMenu?.call(v),
+                      child: const Padding(
+                        padding: EdgeInsets.only(top: 2),
+                        child: Icon(Symbols.more_vert),
+                      ),
+                    ),
+                  ],
+                ),
+                if (_expanded) ...[
+                  const SizedBox(height: 10),
+                  SanctionPager(
+                    sanctions: widget.sanctions,
+                    onTapDetail: widget.onTapDetail,
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 6),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(pages.length, (i) {
-            final selected = i == _page;
-            return Container(
-              width: 6,
-              height: 6,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: selected ? FalletterColor.black : FalletterColor.gray500,
-              ),
-            );
-          }),
-        ),
-      ],
+      ),
     );
   }
 }
