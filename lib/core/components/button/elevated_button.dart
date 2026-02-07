@@ -26,33 +26,45 @@ class CustomElevatedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isEnabled = onPressed != null;
+    final enabledBg = backgroundColor ?? FalletterColor.black;
+    final disabledBg = FalletterColor.gray500;
 
-    final Color bgColor =
-        backgroundColor ??
-        (isEnabled ? FalletterColor.black : FalletterColor.gray500);
-    final Color fgColor = textColor ?? FalletterColor.white;
+    final enabledFg = textColor ?? FalletterColor.white;
+    final disabledFg = (textColor ?? FalletterColor.white);
 
     return SizedBox(
       width: width,
       height: height,
       child: ElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          shadowColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          overlayColor: Colors.transparent,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return disabledBg;
+            return enabledBg;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return disabledFg;
+            return enabledFg;
+          }),
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
           splashFactory: NoSplash.splashFactory,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: border ?? BorderSide.none,
+          shadowColor: WidgetStateProperty.all(Colors.transparent),
+          surfaceTintColor: WidgetStateProperty.all(Colors.transparent),
+
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: border ?? BorderSide.none,
+            ),
+          ),
+          elevation: WidgetStateProperty.all(0),
         ),
         child: DefaultTextStyle(
           style: (textStyle ?? FalletterTextStyle.button).copyWith(
-            color: fgColor,
+            color: onPressed == null ? disabledFg : enabledFg,
           ),
           child: child,
         ),
