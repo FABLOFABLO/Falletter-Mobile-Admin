@@ -114,18 +114,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => const NoticeWriteView(),
                   ),
-                  GoRoute(path: 'detail', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) {
-                    final item = state.extra as Notice;
-                    return NoticeDetailView(
-                      writer: item.teacher,
-                      timeText: item.timeText,
-                      title: item.title,
-                      content: item.content,
-                      onDelete: () {
-                        // TODO: 삭제 로직
-                      },
-                    );
-                  })
+                  GoRoute(
+                    path: 'detail',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) {
+                      final item = state.extra as Notice;
+                      return NoticeDetailView(
+                        writer: item.teacher,
+                        timeText: item.timeText,
+                        title: item.title,
+                        content: item.content,
+                        onDelete: () {
+                          ref.read(noticeProvider.notifier).deleteById(item.id);
+                        },
+                      );
+                    },
+                  ),
                 ],
               ),
             ],

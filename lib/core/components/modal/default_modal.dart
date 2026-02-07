@@ -13,12 +13,14 @@ class DefaultModal extends ConsumerStatefulWidget {
 
   final void Function(int selectedDays, String reason)? onConfirmBan;
   final VoidCallback? onConfirmLogout;
+  final VoidCallback? onConfirmDelete;
 
   const DefaultModal({
     super.key,
     required this.model,
     this.onConfirmBan,
     this.onConfirmLogout,
+    this.onConfirmDelete,
   });
 
   @override
@@ -66,8 +68,13 @@ class _DefaultModalState extends ConsumerState<DefaultModal> {
       if (!state.confirmEnabled) return;
       _close();
       widget.onConfirmBan?.call(state.selectedDays, state.reason.trim());
+      return;
+    }
+
+    _close();
+    if (widget.model.dialogType == DialogType.delete) {
+      widget.onConfirmDelete?.call();
     } else {
-      _close();
       widget.onConfirmLogout?.call();
     }
   }

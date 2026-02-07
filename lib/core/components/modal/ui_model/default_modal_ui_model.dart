@@ -1,4 +1,4 @@
-enum DialogType { ban, logout }
+enum DialogType { ban, logout, delete }
 
 class DefaultModalUiModel {
   final DialogType dialogType;
@@ -13,21 +13,21 @@ class DefaultModalUiModel {
   final String banHintMessage;
 
   const DefaultModalUiModel._({
-   required this.dialogType,
-   required this.cancelText,
-   required this.confirmText,
-   required this.logoutTitle,
-   required this.logoutMessage,
-   required this.duration,
-   required this.banHintMessage,
-});
+    required this.dialogType,
+    required this.cancelText,
+    required this.confirmText,
+    required this.logoutTitle,
+    required this.logoutMessage,
+    required this.duration,
+    required this.banHintMessage,
+  });
 
   factory DefaultModalUiModel.ban({
     List<int> duration = const [3, 7, 30, 70],
     String banHintMessage = '정지 사유 입력',
     String cancelText = '취소',
     String confirmText = '확인',
-}) {
+  }) {
     return DefaultModalUiModel._(
       dialogType: DialogType.ban,
       cancelText: cancelText,
@@ -47,6 +47,23 @@ class DefaultModalUiModel {
   }) {
     return DefaultModalUiModel._(
       dialogType: DialogType.logout,
+      cancelText: cancelText,
+      confirmText: confirmText,
+      logoutTitle: title,
+      logoutMessage: message,
+      duration: const [3, 7, 30, 70],
+      banHintMessage: '정지 사유 입력',
+    );
+  }
+
+  factory DefaultModalUiModel.delete({
+    String title = '삭제하시겠습니까?',
+    String message = '공지를 삭제하시겠습니까?',
+    String cancelText = '취소',
+    String confirmText = '삭제',
+  }) {
+    return DefaultModalUiModel._(
+      dialogType: DialogType.delete,
       cancelText: cancelText,
       confirmText: confirmText,
       logoutTitle: title,

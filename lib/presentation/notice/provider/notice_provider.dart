@@ -32,6 +32,7 @@ class Notice {
 
 class NoticeState {
   final List<Notice> notices;
+
   const NoticeState({this.notices = const []});
 
   NoticeState copyWith({List<Notice>? notices}) {
@@ -93,9 +94,14 @@ class NoticeNotifier extends StateNotifier<NoticeState> {
   void setNotices(List<Notice> notices) {
     state = state.copyWith(notices: notices);
   }
+
+  void deleteNotice(Notice notice) {
+    deleteById(notice.id);
+  }
 }
 
-final noticeProvider =
-StateNotifierProvider<NoticeNotifier, NoticeState>((ref) {
+final noticeProvider = StateNotifierProvider<NoticeNotifier, NoticeState>((
+  ref,
+) {
   return NoticeNotifier();
 });
