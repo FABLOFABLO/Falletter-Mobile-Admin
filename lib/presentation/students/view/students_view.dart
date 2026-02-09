@@ -19,6 +19,7 @@ class FalletterStudentsView extends StatefulWidget {
 class _FalletterStudentsViewState extends State<FalletterStudentsView> {
   final _searchController = TextEditingController();
   final Set<int> _selectedGrades = {};
+  String _committedQuery = '';
 
   late final List<_StudentUi> _allStudents = [
     _StudentUi(
@@ -72,14 +73,20 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
   ];
 
   List<_StudentUi> get _filtered {
-    final q = _searchController.text.trim();
+    final q = _committedQuery.trim();
     return _allStudents.where((s) {
-      final byGrade = _selectedGrades.isEmpty
-          ? true
-          : _selectedGrades.contains(s.grade);
+      final byGrade =
+      _selectedGrades.isEmpty ? true : _selectedGrades.contains(s.grade);
       final byQuery = q.isEmpty ? true : s.numberName.contains(q);
       return byGrade && byQuery;
     }).toList();
+  }
+
+  void _commitSearch() {
+    setState(() {
+      _committedQuery = _searchController.text;
+    });
+    FocusScope.of(context).unfocus();
   }
 
   @override
@@ -95,7 +102,7 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
       builder: (_) => const _SanctionDetailModal(
         dateText: '12월 15일',
         content:
-            'Lorem ipsum mi fringilla massa at purus fermentum lectus rhoncus lectus rhoncus\n'
+        'Lorem ipsum mi fringilla massa at purus fermentum lectus rhoncus lectus rhoncus\n'
             'nunc sit nam ut et nunc lectus elit elit urna\n'
             'leo placerat quis elit ipsum sed amet nec\n'
             'nunc in viverra leo vitae odio habitant quis\n'
@@ -109,9 +116,7 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
       context: context,
       builder: (_) => DefaultModal(
         model: DefaultModalUiModel.ban(),
-        onConfirmBan: (days, reason) {
-          /// TODO: API 연결 시 여기서 요청
-        },
+        onConfirmBan: (days, reason) {},
         onConfirmLogout: null,
       ),
     );
@@ -135,22 +140,26 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomTextFormField(
                       controller: _searchController,
-                      decoration: const InputDecoration(
+                      textInputAction: TextInputAction.search,
+                      onFieldSubmitted: (_) => _commitSearch(),
+                      decoration: InputDecoration(
                         hintText: '학생 검색',
-                        contentPadding: EdgeInsets.all(12),
-                        suffixIcon: Icon(
-                          Symbols.search,
-                          size: 22,
-                          color: FalletterColor.gray600,
+                        contentPadding: const EdgeInsets.all(12),
+                        suffixIcon: IconButton(
+                          onPressed: _commitSearch,
+                          icon: const Icon(
+                            Symbols.search,
+                            size: 22,
+                            color: FalletterColor.gray600,
+                          ),
                         ),
                       ),
-                      onChanged: (_) => setState(() {}),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -162,12 +171,12 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
                             children: (_selectedGrades.toList()..sort())
                                 .map(
                                   (g) => _GradeChip(
-                                    text: '${g}학년',
-                                    onRemove: () => setState(
+                                text: '$g학년',
+                                onRemove: () => setState(
                                       () => _selectedGrades.remove(g),
-                                    ),
-                                  ),
-                                )
+                                ),
+                              ),
+                            )
                                 .toList(),
                           ),
                         ),
@@ -190,7 +199,6 @@ class _FalletterStudentsViewState extends State<FalletterStudentsView> {
                             });
                           },
                           child: SizedBox(
-                            width: 40,
                             height: 44,
                             child: const Center(
                               child: Icon(
