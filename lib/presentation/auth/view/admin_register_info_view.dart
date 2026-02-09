@@ -4,7 +4,8 @@ import 'package:falletter_mobile_admin/core/components/icon/field_icon.dart';
 import 'package:falletter_mobile_admin/core/components/text_form_field/text_form_field.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
-import 'package:falletter_mobile_admin/presentation/inquiry/provider/admin_register_provider.dart';
+import 'package:falletter_mobile_admin/presentation/auth/model/admin_auth_models.dart';
+import 'package:falletter_mobile_admin/presentation/auth/provider/admin_register_provider.dart';
 import 'package:flutter/material.dart';
 
 class AdminRegisterInfoView extends StatelessWidget {

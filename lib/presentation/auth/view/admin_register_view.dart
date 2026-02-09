@@ -1,13 +1,12 @@
 import 'package:falletter_mobile_admin/core/components/button/elevated_button.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
-import 'package:falletter_mobile_admin/presentation/inquiry/provider/admin_register_provider.dart';
+import 'package:falletter_mobile_admin/presentation/auth/view/admin_register_info_view.dart';
+import 'package:falletter_mobile_admin/presentation/auth/provider/admin_register_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'admin_register_done_view.dart';
-import 'admin_register_info_view.dart';
 import 'admin_register_password_view.dart';
 
 class AdminRegisterView extends ConsumerStatefulWidget {

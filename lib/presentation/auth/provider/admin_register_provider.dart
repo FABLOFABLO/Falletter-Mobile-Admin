@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:falletter_mobile_admin/presentation/auth/model/admin_auth_models.dart';
+import 'package:falletter_mobile_admin/presentation/auth/repository/admin_auth_repository.dart';
 
-enum Gender { male, female }
 enum AdminRegisterStep { info, password, done }
 
 final adminRegisterProvider =
@@ -95,6 +97,7 @@ class AdminRegisterState {
 
 class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
   Timer? _verifyExpiryTimer;
+  bool _isRegistering = false;
 
   @override
   AdminRegisterState build() {
@@ -105,6 +108,12 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
     return const AdminRegisterState();
   }
 
+  String _buildDsmEmail(String input) {
+    final trimmed = input.trim();
+    final local = trimmed.contains('@') ? trimmed.split('@').first : trimmed;
+    return '$local@dsm.hs.kr';
+  }
+
   void selectGender(Gender gender) => state = state.copyWith(gender: gender);
   void setName(String v) => state = state.copyWith(name: v);
   void setEmailLocalPart(String v) => state = state.copyWith(emailLocalPart: v);
@@ -112,19 +121,28 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
 
   Future<void> sendVerifyCode() async {
     state = state.copyWith(showErrorBorder: true);
-    final local = state.emailLocalPart.trim();
-    if (local.isEmpty) return;
 
+    final input = state.emailLocalPart;
+    if (input.trim().isEmpty) return;
     if (state.isSendingCode) return;
 
-    final email = '$local@dsm.hs.kr';
+    final email = _buildDsmEmail(input);
+    final repo = ref.read(adminAuthRepositoryProvider);
 
     state = state.copyWith(isSendingCode: true);
-    try {
-      await Future<void>.delayed(const Duration(milliseconds: 400));
 
+    try {
+      await repo.sendEmailVerifyCode(email: email);
       state = state.copyWith(codeSent: true);
       _startVerifyExpiry(seconds: 300);
+    } on DioException catch (e) {
+      print('[EMAIL SEND FAIL] ${e.response?.statusCode} ${e.requestOptions.uri}');
+      print('[EMAIL SEND FAIL DATA] ${e.response?.data}');
+
+      state = state.copyWith(codeSent: false);
+    } catch (e) {
+      print('[EMAIL SEND UNKNOWN] $e');
+      state = state.copyWith(codeSent: false);
     } finally {
       state = state.copyWith(isSendingCode: false);
     }
@@ -145,14 +163,30 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
     });
   }
 
-  void nextToPassword() {
+  Future<void> nextToPassword() async {
     state = state.copyWith(showErrorBorder: true);
     if (!state.canGoNextInfo) return;
 
-    state = state.copyWith(
-      step: AdminRegisterStep.password,
-      showErrorBorder: false,
-    );
+    final email = _buildDsmEmail(state.emailLocalPart);
+    final code = state.verifyCode.trim();
+    final repo = ref.read(adminAuthRepositoryProvider);
+
+    try {
+      await repo.matchEmailVerifyCode(email: email, verifyCode: code);
+
+      state = state.copyWith(
+        step: AdminRegisterStep.password,
+        showErrorBorder: false,
+      );
+    } on DioException catch (e) {
+      print('[EMAIL MATCH FAIL] ${e.response?.statusCode} ${e.requestOptions.uri}');
+      print('[EMAIL MATCH FAIL DATA] ${e.response?.data}');
+
+      state = state.copyWith(showErrorBorder: true);
+    } catch (e) {
+      print('[EMAIL MATCH UNKNOWN] $e');
+      state = state.copyWith(showErrorBorder: true);
+    }
   }
 
   void setPassword(String v) => state = state.copyWith(password: v);
@@ -169,12 +203,38 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
     state = state.copyWith(showErrorBorder: true);
     if (!state.canRegister) return;
 
-    // TODO: 최종 등록(신청) API 호출
+    if (_isRegistering) return;
+    _isRegistering = true;
 
-    state = state.copyWith(
-      step: AdminRegisterStep.done,
-      showErrorBorder: false,
-    );
+    try {
+      final gender = state.gender;
+      if (gender == null) return;
+
+      final email = _buildDsmEmail(state.emailLocalPart);
+
+      final request = AdminSignUpRequest(
+        email: email,
+        password: state.password,
+        name: state.name.trim(),
+        gender: genderToApi(gender),
+      );
+
+      final repo = ref.read(adminAuthRepositoryProvider);
+      await repo.signUp(request);
+
+      state = state.copyWith(
+        step: AdminRegisterStep.done,
+        showErrorBorder: false,
+      );
+    } on AdminSignUpException catch (e) {
+      state = state.copyWith(showErrorBorder: true);
+      print(e);
+    } catch (e) {
+      state = state.copyWith(showErrorBorder: true);
+      print('[SIGNUP UNKNOWN] $e');
+    } finally {
+      _isRegistering = false;
+    }
   }
 
   void backToInfo() {

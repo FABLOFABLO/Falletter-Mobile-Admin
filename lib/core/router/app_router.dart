@@ -5,7 +5,7 @@ import 'package:falletter_mobile_admin/core/provider/bottom_nav_provider.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/presentation/community/view/community_detail_view.dart';
 import 'package:falletter_mobile_admin/presentation/community/view/community_view.dart';
-import 'package:falletter_mobile_admin/presentation/inquiry/view/admin_register_view.dart';
+import 'package:falletter_mobile_admin/presentation/auth/view/admin_register_view.dart';
 import 'package:falletter_mobile_admin/presentation/inquiry/view/inquiry_view.dart';
 import 'package:falletter_mobile_admin/presentation/letter/view/letter_view.dart';
 import 'package:falletter_mobile_admin/presentation/notice/provider/notice_provider.dart';
