@@ -1,7 +1,12 @@
+import 'package:falletter_mobile_admin/core/util/date_format.dart';
+import 'package:falletter_mobile_admin/presentation/community/provider/community_marks_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:falletter_mobile_admin/core/network/dio.dart';
+import 'package:falletter_mobile_admin/core/network/community_api.dart';
 
 class PostUi {
   final String id;
+  final int authorUserId;
   final String title;
   final String preview;
   final String author;
@@ -13,6 +18,7 @@ class PostUi {
 
   const PostUi({
     required this.id,
+    required this.authorUserId,
     required this.title,
     required this.preview,
     required this.author,
@@ -26,6 +32,7 @@ class PostUi {
   PostUi copyWith({bool? deletedByAdmin, bool? warned, bool? banned}) {
     return PostUi(
       id: id,
+      authorUserId: authorUserId,
       title: title,
       preview: preview,
       author: author,
@@ -41,6 +48,7 @@ class PostUi {
 class CommentUi {
   final String id;
   final String postId;
+  final int authorUserId;
   final String author;
   final String timeText;
   final String content;
@@ -51,6 +59,7 @@ class CommentUi {
   const CommentUi({
     required this.id,
     required this.postId,
+    required this.authorUserId,
     required this.author,
     required this.timeText,
     required this.content,
@@ -63,6 +72,7 @@ class CommentUi {
     return CommentUi(
       id: id,
       postId: postId,
+      authorUserId: authorUserId,
       author: author,
       timeText: timeText,
       content: content,
@@ -73,119 +83,95 @@ class CommentUi {
   }
 }
 
-class CommunityState {
-  final List<PostUi> posts;
-  final Map<String, List<CommentUi>> comments;
+class PostDetailUi {
+  final PostUi post;
+  final List<CommentUi> comments;
 
-  const CommunityState({required this.posts, required this.comments});
-
-  CommunityState copyWith({
-    List<PostUi>? posts,
-    Map<String, List<CommentUi>>? comments,
-  }) {
-    return CommunityState(
-      posts: posts ?? this.posts,
-      comments: comments ?? this.comments,
-    );
-  }
+  const PostDetailUi({required this.post, required this.comments});
 }
 
-class CommunityNotifier extends StateNotifier<CommunityState> {
-  CommunityNotifier() : super(CommunityState(posts: [], comments: {})) {
-    _initializePosts();
-  }
+final communityApiProvider = Provider<CommunityApi>((ref) {
+  final dio = ref.watch(dioClientProvider).dio;
+  return CommunityApi(dio);
+});
 
-  void _initializePosts() {
-    final posts = List.generate(
-      8,
-      (i) => PostUi(
-        id: 'post_$i',
-        title: 'Title $i',
-        preview: 'Text content...',
-        author: '1411 이승현',
-        timeText: '45분전',
-        commentCount: 10,
+final communityPostsProvider = FutureProvider.autoDispose<List<PostUi>>((
+  ref,
+) async {
+  final api = ref.watch(communityApiProvider);
+  final marks = ref.watch(communityMarksProvider);
+  final raw = await api.fetchPostsRaw();
+
+  return raw.map((json) {
+    final author = (json['author'] as Map).cast<String, dynamic>();
+    final postId = (json['id'] as int).toString();
+    final mark = marks.postMarks[postId];
+
+    return PostUi(
+      id: postId,
+      title: json['title'] as String,
+      preview: json['content'] as String,
+      author: author['name'] as String,
+      authorUserId: author['user_id'] as int,
+      timeText: DateFormatter.mmdd(
+        DateTime.parse(json['created_at'] as String),
       ),
+      commentCount: 0,
+      deletedByAdmin: json['is_deleted'] as bool,
+      warned: mark?.warned ?? false,
+      banned: mark?.banned ?? false,
     );
+  }).toList();
+});
 
-    final comments = <String, List<CommentUi>>{};
-    for (var post in posts) {
-      comments[post.id] = List.generate(
-        10,
-        (i) => CommentUi(
-          id: 'comment_${post.id}_$i',
-          postId: post.id,
-          author: '댓글 작성자 $i',
-          timeText: '10분전',
-          content: '댓글 내용입니다.',
+/// GET /community/posts/{post-id}
+final communityPostDetailProvider = FutureProvider.autoDispose
+    .family<PostDetailUi, String>((ref, postId) async {
+      final api = ref.watch(communityApiProvider);
+      final marks = ref.watch(communityMarksProvider);
+      final json = await api.fetchPostDetailRaw(postId);
+
+      final author = (json['author'] as Map).cast<String, dynamic>();
+      final postMark = marks.postMarks[postId];
+
+      final post = PostUi(
+        id: (json['id'] as int).toString(),
+        title: json['title'] as String,
+        preview: json['content'] as String,
+        author: author['name'] as String,
+        authorUserId: author['user_id'] as int,
+        timeText: DateFormatter.mmdd(
+          DateTime.parse(json['created_at'] as String),
         ),
+        commentCount: (json['comment'] as List?)?.length ?? 0,
+        deletedByAdmin: json['is_deleted'] as bool,
+        warned: postMark?.warned ?? false,
+        banned: postMark?.banned ?? false,
       );
-    }
 
-    state = CommunityState(posts: posts, comments: comments);
-  }
+      final commentsRaw = (json['comment'] as List?) ?? [];
+      final comments = commentsRaw.map((c) {
+        final cm = (c as Map).cast<String, dynamic>();
+        final user = (cm['user'] as Map).cast<String, dynamic>();
 
-  void updatePost(
-    String postId, {
-    bool? deletedByAdmin,
-    bool? warned,
-    bool? banned,
-  }) {
-    final updatedPosts = state.posts.map((post) {
-      if (post.id == postId) {
-        return post.copyWith(
-          deletedByAdmin: deletedByAdmin,
-          warned: warned,
-          banned: banned,
+        final commentId = (cm['comment_id'] as int).toString();
+        final key = '$postId:$commentId';
+        final cMark = marks.commentMarks[key];
+
+        return CommentUi(
+          id: commentId,
+          postId: postId,
+          authorUserId: user['user_id'] as int,
+          author: user['name'] as String,
+          content: cm['comment'] as String,
+          timeText: DateFormatter.mmdd(
+            DateTime.parse(cm['created_at'] as String),
+          ),
+          deletedByAdmin: cMark?.deletedByAdmin ?? false,
+          warned: cMark?.warned ?? false,
+          banned: cMark?.banned ?? false,
         );
-      }
-      return post;
-    }).toList();
+      }).toList();
 
-    state = state.copyWith(posts: updatedPosts);
-  }
-
-  void updateComment(
-    String postId,
-    String commentId, {
-    bool? deletedByAdmin,
-    bool? warned,
-    bool? banned,
-  }) {
-    final postComments = state.comments[postId];
-    if (postComments == null) return;
-
-    final updatedComments = postComments.map((comment) {
-      if (comment.id == commentId) {
-        return comment.copyWith(
-          deletedByAdmin: deletedByAdmin,
-          warned: warned,
-          banned: banned,
-        );
-      }
-      return comment;
-    }).toList();
-
-    final newCommentsMap = Map<String, List<CommentUi>>.from(state.comments);
-    newCommentsMap[postId] = updatedComments;
-
-    state = state.copyWith(comments: newCommentsMap);
-  }
-
-  List<CommentUi> getComments(String postId) {
-    return state.comments[postId] ?? [];
-  }
-
-  PostUi? getPost(String postId) {
-    try {
-      return state.posts.firstWhere((post) => post.id == postId);
-    } catch (e) {
-      return null;
-    }
-  }
-}
-
-final communityProvider =
-    StateNotifierProvider<CommunityNotifier, CommunityState>((ref) {
-      return CommunityNotifier();
+      return PostDetailUi(post: post, comments: comments);
     });
