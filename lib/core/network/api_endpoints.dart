@@ -23,6 +23,11 @@ class ApiEndpoints {
       "/admin/notice/$noticeId";
 
   /// Community
+  static const communityPosts = "/community/posts";
+
+  static String communityPostDetail(String postId) =>
+      "/community/posts/$postId";
+
   static String communityDelete(String communityId) =>
       "/admin/community/$communityId";
 
@@ -30,6 +35,8 @@ class ApiEndpoints {
   static const userAll = "/admin/user/all";
 
   static String userProfile(String userId) => "/admin/user/$userId";
+
+  static const logOut = "/user/logout";
 
   /// Suspend
   static String userWarn(String userId) => "/admin/warning/$userId";

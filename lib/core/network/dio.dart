@@ -28,6 +28,8 @@ class DioClient {
           if (accessToken != null && accessToken.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $accessToken';
           }
+          print('[REQ] ${options.method} ${options.baseUrl}${options.path}');
+          print('[REQ HEADERS] ${options.headers}');
           handler.next(options);
         },
         onError: (e, handler) {
