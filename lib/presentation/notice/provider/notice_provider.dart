@@ -49,15 +49,7 @@ class NoticeNotifier extends StateNotifier<NoticeState> {
     if (state.notices.isNotEmpty) return;
     final now = DateTime.now();
     state = state.copyWith(
-      notices: [
-        Notice(
-          id: 'seed-1',
-          title: '내일 1학년 1반 시간표 바뀌었다는데',
-          content: '시간표 바뀐거 아시는 분 댓글 달아주세요ㅠㅠ!',
-          teacher: '이승현',
-          createdAt: now.subtract(const Duration(minutes: 45)),
-        ),
-      ],
+      notices: [],
     );
   }
 
