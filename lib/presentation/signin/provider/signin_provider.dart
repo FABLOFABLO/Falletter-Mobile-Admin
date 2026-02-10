@@ -1,3 +1,6 @@
+import 'package:falletter_mobile_admin/core/network/dio.dart';
+import 'package:falletter_mobile_admin/presentation/auth/model/admin_auth_models.dart';
+import 'package:falletter_mobile_admin/presentation/auth/repository/admin_auth_repository.dart';
 import 'package:falletter_mobile_admin/presentation/signin/provider/signin_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,6 +43,13 @@ class SigninNotifier extends Notifier<SignInState> {
   }
 
   Future<void> submit() async {
+    String normalizeDsmEmail(String input) {
+      final t = input.trim();
+      if (t.isEmpty) return t;
+      if (t.contains('@')) return t;
+      return '$t@dsm.hs.kr';
+    }
+
     if (!state.canSubmit) {
       state = state.copyWith(showErrorBorder: true);
       return;
@@ -51,31 +61,35 @@ class SigninNotifier extends Notifier<SignInState> {
       errorType: SignInErrorType.none,
     );
 
+    final repo = ref.read(adminAuthRepositoryProvider);
+
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
+      final req = AdminSignInRequest(
+        email: normalizeDsmEmail(state.email),
+        password: state.password,
+      );
 
-      final responseCode = 'NOT_APPROVED';
+      final tokens = await repo.signIn(req);
 
-      switch (responseCode) {
-        case 'SUCCESS':
-          state = state.copyWith(isSuccess: true);
-          return;
+      ref.read(accessTokenProvider.notifier).state = tokens.accessToken;
+      ref.read(refreshTokenProvider.notifier).state = tokens.refreshToken;
 
-        case 'NOT_APPROVED':
-          state = state.copyWith(errorType: SignInErrorType.notApproved);
-          return;
-
-        case 'USER_NOT_FOUND':
+      state = state.copyWith(isSuccess: true);
+    } on AdminSignInException catch (e) {
+      switch (e.type) {
+        case AdminSignInErrorType.userNotFound:
           state = state.copyWith(errorType: SignInErrorType.userNotFound);
-          return;
-
-        case 'INVALID_CREDENTIAL':
+          break;
+        case AdminSignInErrorType.invalidCredential:
           state = state.copyWith(errorType: SignInErrorType.invalidCredential);
-          return;
-
-        default:
+          break;
+        case AdminSignInErrorType.notApproved:
+          state = state.copyWith(errorType: SignInErrorType.notApproved);
+          break;
+        case AdminSignInErrorType.network:
+        case AdminSignInErrorType.unknown:
           state = state.copyWith(errorType: SignInErrorType.unknown);
-          return;
+          break;
       }
     } finally {
       state = state.copyWith(isLoading: false);
