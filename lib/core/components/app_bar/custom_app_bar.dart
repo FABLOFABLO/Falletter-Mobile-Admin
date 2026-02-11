@@ -1,10 +1,17 @@
+import 'dart:async';
+
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
+import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/core/router/router_path.dart';
+import 'package:falletter_mobile_admin/presentation/auth/provider/admin_logout_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-class CustomAppBar extends StatelessWidget {
+class CustomAppBar extends ConsumerWidget {
   final String? leftAsset;
   final String? rightAsset;
 
@@ -27,13 +34,37 @@ class CustomAppBar extends StatelessWidget {
     this.onBack,
   });
 
-  Future<void> _handleLogout(BuildContext context) async {
+  void _handleLogout(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (context) => DefaultModal(
+      builder: (_) => DefaultModal(
         model: DefaultModalUiModel.logout(),
         onConfirmLogout: () {
-          // 실제 로그아웃 로직 수행 (예: Provider 호출, 페이지 이동 등)
+          unawaited(() async {
+            try {
+              await ref.read(adminLogoutProvider.notifier).logout();
+              if (!context.mounted) return;
+
+              await Future<void>.delayed(Duration.zero);
+
+              context.go(RouterPath.splash);
+            } catch (e) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '로그아웃에 실패했어요.',
+                    style: FalletterTextStyle.body2.copyWith(
+                      color: FalletterColor.white,
+                    ),
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: FalletterColor.black,
+                  elevation: 0,
+                ),
+              );
+            }
+          }());
         },
       ),
     );
@@ -47,7 +78,7 @@ class CustomAppBar extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       child: SizedBox(
         height: height,
@@ -65,18 +96,17 @@ class CustomAppBar extends StatelessWidget {
                             onBack!();
                             return;
                           }
-                          Navigator.of(context).maybePop();
+                          if (context.canPop()) context.pop();
                         },
                         child: const Icon(Symbols.arrow_back_ios, size: 22),
                       )
                     : const SizedBox(width: 40, height: 40),
               ),
-
               Align(
                 alignment: Alignment.centerRight,
                 child: showLogout
                     ? _icon(
-                        onTap: () => _handleLogout(context),
+                        onTap: () => _handleLogout(context, ref),
                         child: Icon(
                           Symbols.logout,
                           size: 22,

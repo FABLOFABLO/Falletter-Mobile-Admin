@@ -9,6 +9,7 @@ class ApiEndpoints {
   static const signIn = "/admin/auth/signin";
   static const emailVerify = "/auth/email/verify";
   static const emailMatch = "/auth/email/match";
+  static const logOut = "/admin/auth/logout";
 
   /// Letter
   static const letterUnpassed = "/admin/letter/unpassed";
@@ -35,8 +36,6 @@ class ApiEndpoints {
   static const userAll = "/admin/user/all";
 
   static String userProfile(String userId) => "/admin/user/$userId";
-
-  static const logOut = "/user/logout";
 
   /// Suspend
   static String userWarn(String userId) => "/admin/warning/$userId";

@@ -112,6 +112,20 @@ class AdminAuthRepository {
     }
   }
 
+  Future<void> logout() async {
+    try {
+      await dioClient.dio.delete(ApiEndpoints.logOut);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.connectionError) {
+        throw Exception('네트워크 오류로 로그아웃 실패');
+      }
+      throw Exception('로그아웃 실패: ${e.response?.statusCode}');
+    }
+  }
+
   Future<void> sendEmailVerifyCode({required String email}) async {
     await dioClient.dio.post(
       ApiEndpoints.emailVerify,
