@@ -276,6 +276,8 @@ class _FalletterStudentsViewState extends ConsumerState<FalletterStudentsView> {
               const SizedBox(height: 8),
               Expanded(
                 child: RefreshIndicator(
+                  backgroundColor: FalletterColor.middleWhite,
+                  color: FalletterColor.black,
                   onRefresh: _refreshStudents,
                   child: asyncStudents.when(
                     loading: () => ListView(
