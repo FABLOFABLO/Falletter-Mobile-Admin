@@ -5,32 +5,22 @@ import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart'
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/presentation/notice/provider/notice_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum NoticeMoreAction { delete }
 
-class NoticeDetailView extends StatefulWidget {
-  final String writer;
-  final String timeText;
-  final String title;
-  final String content;
+class NoticeDetailView extends ConsumerStatefulWidget {
+  final int noticeId;
 
-  final VoidCallback? onDelete;
-
-  const NoticeDetailView({
-    super.key,
-    required this.writer,
-    required this.timeText,
-    required this.title,
-    required this.content,
-    this.onDelete,
-  });
+  const NoticeDetailView({super.key, required this.noticeId});
 
   @override
-  State<NoticeDetailView> createState() => _NoticeDetailViewState();
+  ConsumerState<NoticeDetailView> createState() => _NoticeDetailViewState();
 }
 
-class _NoticeDetailViewState extends State<NoticeDetailView> {
+class _NoticeDetailViewState extends ConsumerState<NoticeDetailView> {
   bool _isDeleted = false;
 
   void _openDeleteModal() {
@@ -38,9 +28,9 @@ class _NoticeDetailViewState extends State<NoticeDetailView> {
       context: context,
       builder: (_) => DefaultModal(
         model: DefaultModalUiModel.delete(),
-        onConfirmDelete: () {
+        onConfirmDelete: () async {
           setState(() => _isDeleted = true);
-          widget.onDelete?.call();
+          await ref.read(noticeProvider.notifier).deleteNotice(widget.noticeId);
         },
       ),
     );
@@ -70,27 +60,50 @@ class _NoticeDetailViewState extends State<NoticeDetailView> {
       ),
     ]);
 
-    return Scaffold(
-      backgroundColor: FalletterColor.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const CustomAppBar(showBack: true),
-            DetailCard(
-              writer: widget.writer,
-              timeText: widget.timeText,
-              title: widget.title,
-              content: widget.content,
-              menuItems: menuItems,
-              onMenuSelected: (value) {
-                if (value == NoticeMoreAction.delete) {
-                  _openDeleteModal();
-                }
-              },
+    return FutureBuilder(
+      future: ref
+          .read(noticeProvider.notifier)
+          .fetchNoticeDetail(widget.noticeId),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Scaffold(
+            backgroundColor: FalletterColor.background,
+            body: SafeArea(
+              child: Column(
+                children: const [
+                  CustomAppBar(showBack: true),
+                  Expanded(child: Center(child: CircularProgressIndicator())),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+
+        final notice = snapshot.data!;
+
+        return Scaffold(
+          backgroundColor: FalletterColor.background,
+          body: SafeArea(
+            child: Column(
+              children: [
+                const CustomAppBar(showBack: true),
+                DetailCard(
+                  writer: notice.teacherText,
+                  timeText: notice.timeText(),
+                  title: notice.title,
+                  content: (notice.content ?? ''),
+                  menuItems: menuItems,
+                  onMenuSelected: (value) {
+                    if (value == NoticeMoreAction.delete) {
+                      _openDeleteModal();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

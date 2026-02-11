@@ -40,15 +40,14 @@ class _NoticeWriteViewState extends ConsumerState<NoticeWriteView> {
     super.dispose();
   }
 
-  void _onSave() {
-    ref
+  void _onSave() async {
+    await ref
         .read(noticeProvider.notifier)
-        .addNotice(
+        .createNotice(
           title: _titleController.text,
           content: _contentController.text,
-          teacher: '관리자', /// 연동 시 수정
         );
-
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 

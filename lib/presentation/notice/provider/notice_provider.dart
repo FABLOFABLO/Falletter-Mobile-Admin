@@ -1,99 +1,89 @@
+import 'package:falletter_mobile_admin/presentation/notice/model/notice_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:falletter_mobile_admin/core/network/dio.dart';
+import 'package:falletter_mobile_admin/core/network/notice_api.dart';
 
-class Notice {
-  final String id;
-  final String title;
-  final String content;
-  final String teacher;
-  final DateTime createdAt;
-
-  const Notice({
-    required this.id,
-    required this.title,
-    required this.content,
-    required this.teacher,
-    required this.createdAt,
-  });
-
-  String get preview {
-    final t = content.trim();
-    if (t.isEmpty) return '';
-    return t.length > 40 ? '${t.substring(0, 40)}...' : t;
-  }
-
-  String get timeText {
-    final diff = DateTime.now().difference(createdAt);
-    if (diff.inMinutes < 1) return '방금 전';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
-    if (diff.inHours < 24) return '${diff.inHours}시간 전';
-    return '${diff.inDays}일 전';
-  }
-}
+final noticeApiProvider = Provider<NoticeApi>((ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  return NoticeApi(dioClient.dio);
+});
 
 class NoticeState {
   final List<Notice> notices;
+  final bool isLoading;
+  final String? errorMessage;
 
-  const NoticeState({this.notices = const []});
+  const NoticeState({
+    this.notices = const [],
+    this.isLoading = false,
+    this.errorMessage,
+  });
 
-  NoticeState copyWith({List<Notice>? notices}) {
-    return NoticeState(notices: notices ?? this.notices);
+  NoticeState copyWith({
+    List<Notice>? notices,
+    bool? isLoading,
+    String? errorMessage,
+  }) {
+    return NoticeState(
+      notices: notices ?? this.notices,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
+    );
   }
 }
 
 class NoticeNotifier extends StateNotifier<NoticeState> {
-  NoticeNotifier() : super(const NoticeState()) {
-    _seed();
+  final Ref _ref;
+  NoticeNotifier(this._ref) : super(const NoticeState()) {
+    fetchNotices();
   }
 
-  void _seed() {
-    if (state.notices.isNotEmpty) return;
-    final now = DateTime.now();
-    state = state.copyWith(
-      notices: [],
-    );
+  Future<void> fetchNotices() async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final raw = await _ref.read(noticeApiProvider).fetchNoticesRaw();
+      final items = raw.map(Notice.fromListJson).toList();
+      state = state.copyWith(notices: items, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: '$e');
+    }
   }
 
-  Notice addNotice({
+  Future<Notice> fetchNoticeDetail(int id) async {
+    final raw = await _ref.read(noticeApiProvider).fetchNoticeDetailRaw(id);
+    final detail = Notice.fromDetailJson(raw);
+
+    final fromList = state.notices.where((n) => n.id == id).toList();
+    if (detail.authorName.trim().isEmpty && fromList.isNotEmpty) {
+      return Notice(
+        id: detail.id,
+        title: detail.title,
+        content: detail.content,
+        authorName: fromList.first.authorName,
+        createdAt: detail.createdAt,
+      );
+    }
+    return detail;
+  }
+
+  Future<void> createNotice({
     required String title,
     required String content,
-    required String teacher,
-  }) {
-    final now = DateTime.now();
-    final notice = Notice(
-      id: now.microsecondsSinceEpoch.toString(),
+  }) async {
+    await _ref.read(noticeApiProvider).createNotice(
       title: title.trim(),
       content: content.trim(),
-      teacher: teacher.trim(),
-      createdAt: now,
     );
-    state = state.copyWith(notices: [notice, ...state.notices]);
-    return notice;
+
+    await fetchNotices();
   }
 
-  Notice? findById(String id) {
-    for (final n in state.notices) {
-      if (n.id == id) return n;
-    }
-    return null;
-  }
-
-  void deleteById(String id) {
-    state = state.copyWith(
-      notices: state.notices.where((n) => n.id != id).toList(),
-    );
-  }
-
-  void setNotices(List<Notice> notices) {
-    state = state.copyWith(notices: notices);
-  }
-
-  void deleteNotice(Notice notice) {
-    deleteById(notice.id);
+  Future<void> deleteNotice(int id) async {
+    await _ref.read(noticeApiProvider).deleteNotice(id);
+    await fetchNotices();
   }
 }
 
-final noticeProvider = StateNotifierProvider<NoticeNotifier, NoticeState>((
-  ref,
-) {
-  return NoticeNotifier();
+final noticeProvider = StateNotifierProvider<NoticeNotifier, NoticeState>((ref) {
+  return NoticeNotifier(ref);
 });
