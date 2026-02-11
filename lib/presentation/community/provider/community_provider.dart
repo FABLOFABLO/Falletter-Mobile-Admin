@@ -95,9 +95,8 @@ final communityApiProvider = Provider<CommunityApi>((ref) {
   return CommunityApi(dio);
 });
 
-final communityPostsProvider = FutureProvider.autoDispose<List<PostUi>>((
-  ref,
-) async {
+final communityPostsProvider =
+FutureProvider.autoDispose<List<PostUi>>((ref) async {
   final api = ref.watch(communityApiProvider);
   final marks = ref.watch(communityMarksProvider);
   final raw = await api.fetchPostsRaw();
@@ -107,16 +106,17 @@ final communityPostsProvider = FutureProvider.autoDispose<List<PostUi>>((
     final postId = (json['id'] as int).toString();
     final mark = marks.postMarks[postId];
 
+    final cc = json['comment_count'];
+    final commentCount = cc is int ? cc : (cc is num ? cc.toInt() : 0);
+
     return PostUi(
       id: postId,
       title: json['title'] as String,
       preview: json['content'] as String,
       author: author['name'] as String,
       authorUserId: author['user_id'] as int,
-      timeText: DateFormatter.mmdd(
-        DateTime.parse(json['created_at'] as String),
-      ),
-      commentCount: 0,
+      timeText: DateFormatter.mmdd(DateTime.parse(json['created_at'] as String)),
+      commentCount: commentCount,
       deletedByAdmin: json['is_deleted'] as bool,
       warned: mark?.warned ?? false,
       banned: mark?.banned ?? false,
