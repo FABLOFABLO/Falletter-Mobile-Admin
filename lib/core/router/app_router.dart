@@ -8,6 +8,7 @@ import 'package:falletter_mobile_admin/presentation/community/view/community_vie
 import 'package:falletter_mobile_admin/presentation/auth/view/admin_register_view.dart';
 import 'package:falletter_mobile_admin/presentation/inquiry/view/inquiry_view.dart';
 import 'package:falletter_mobile_admin/presentation/letter/view/letter_view.dart';
+import 'package:falletter_mobile_admin/presentation/notice/model/notice_model.dart';
 import 'package:falletter_mobile_admin/presentation/notice/provider/notice_provider.dart';
 import 'package:falletter_mobile_admin/presentation/notice/view/notice_detail_view.dart';
 import 'package:falletter_mobile_admin/presentation/notice/view/notice_view.dart';
@@ -117,16 +118,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'detail',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) {
-                      final item = state.extra as Notice;
-                      return NoticeDetailView(
-                        writer: item.teacher,
-                        timeText: item.timeText,
-                        title: item.title,
-                        content: item.content,
-                        onDelete: () {
-                          ref.read(noticeProvider.notifier).deleteById(item.id);
-                        },
-                      );
+                      final noticeId = state.extra as int;
+                      return NoticeDetailView(noticeId: noticeId);
                     },
                   ),
                 ],
