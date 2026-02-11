@@ -40,10 +40,31 @@ class NoticeNotifier extends StateNotifier<NoticeState> {
 
   Future<void> fetchNotices() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
+
     try {
-      final raw = await _ref.read(noticeApiProvider).fetchNoticesRaw();
-      final items = raw.map(Notice.fromListJson).toList();
-      state = state.copyWith(notices: items, isLoading: false);
+      final api = _ref.read(noticeApiProvider);
+      final rawList = await api.fetchNoticesRaw();
+      final listItems = rawList.map(Notice.fromListJson).toList();
+      final filled = await Future.wait(
+        listItems.map((n) async {
+          try {
+            final rawDetail = await api.fetchNoticeDetailRaw(n.id);
+            final detail = Notice.fromDetailJson(rawDetail);
+
+            return Notice(
+              id: n.id,
+              title: n.title,
+              authorName: n.authorName,
+              createdAt: n.createdAt,
+              content: detail.content,
+            );
+          } catch (_) {
+            return n;
+          }
+        }),
+      );
+
+      state = state.copyWith(notices: filled, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: '$e');
     }
