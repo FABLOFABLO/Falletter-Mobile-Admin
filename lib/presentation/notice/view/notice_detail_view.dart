@@ -87,17 +87,22 @@ class _NoticeDetailViewState extends ConsumerState<NoticeDetailView> {
             child: Column(
               children: [
                 const CustomAppBar(showBack: true),
-                DetailCard(
-                  writer: notice.teacherText,
-                  timeText: notice.timeText(),
-                  title: notice.title,
-                  content: (notice.content ?? ''),
-                  menuItems: menuItems,
-                  onMenuSelected: (value) {
-                    if (value == NoticeMoreAction.delete) {
-                      _openDeleteModal();
-                    }
-                  },
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    child: DetailCard(
+                      writer: notice.teacherText,
+                      timeText: notice.timeText(),
+                      title: notice.title,
+                      content: (notice.content ?? ''),
+                      menuItems: menuItems,
+                      onMenuSelected: (value) {
+                        if (value == NoticeMoreAction.delete) {
+                          _openDeleteModal();
+                        }
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),
