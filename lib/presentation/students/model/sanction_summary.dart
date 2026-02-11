@@ -7,16 +7,23 @@ class SanctionSummary {
   final String dateText;
   final String? countText;
 
+  final String? reason;
+  final DateTime? createdAt;
+  final int? days;
+
   const SanctionSummary({
     required this.type,
     required this.dateText,
     this.countText,
+    this.reason,
+    this.createdAt,
+    this.days,
   });
 }
 
 class SanctionPager extends StatefulWidget {
   final List<SanctionSummary> sanctions;
-  final VoidCallback? onTapDetail;
+  final void Function(SanctionSummary sanction)? onTapDetail;
 
   const SanctionPager({super.key, required this.sanctions, this.onTapDetail});
 
@@ -35,6 +42,15 @@ class _SanctionPagerState extends State<SanctionPager> {
       result.add(list.sublist(i, (i + size).clamp(0, list.length)));
     }
     return result;
+  }
+
+  int _activeDotIndex(int totalPages, int currentPage) {
+    if (totalPages <= 3) return currentPage;
+
+    final last = totalPages - 1;
+    if (currentPage == 0) return 0;
+    if (currentPage == last) return 2;
+    return 1;
   }
 
   @override
@@ -60,6 +76,7 @@ class _SanctionPagerState extends State<SanctionPager> {
         ),
       );
     }
+    const double size = 6;
     final pages = _chunk(sanctions, 4);
     return Column(
       children: [
@@ -76,9 +93,10 @@ class _SanctionPagerState extends State<SanctionPager> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: list.map((s) {
                   final isBan = s.type == '정지';
+
                   final rightWidget = isBan
                       ? GestureDetector(
-                          onTap: widget.onTapDetail,
+                          onTap: () => widget.onTapDetail?.call(s),
                           behavior: HitTestBehavior.opaque,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 2),
@@ -100,6 +118,7 @@ class _SanctionPagerState extends State<SanctionPager> {
                           ),
                         )
                       : const SizedBox.shrink();
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: SizedBox(
@@ -136,24 +155,49 @@ class _SanctionPagerState extends State<SanctionPager> {
             },
           ),
         ),
+
         Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(pages.length, (i) {
-              final selected = i == _page;
-              return Container(
-                width: 6,
-                height: 6,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: selected
-                      ? FalletterColor.black
-                      : FalletterColor.gray500,
-                ),
-              );
-            }),
+            children: () {
+              final totalPages = pages.length;
+
+              if (totalPages <= 1) return <Widget>[];
+
+              if (totalPages <= 3) {
+                return List.generate(totalPages, (i) {
+                  final selected = i == _page;
+                  return Container(
+                    width: size,
+                    height: size,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: selected
+                          ? FalletterColor.black
+                          : FalletterColor.gray500,
+                    ),
+                  );
+                });
+              }
+
+              final active = _activeDotIndex(totalPages, _page);
+              return List.generate(3, (i) {
+                final selected = i == active;
+                return Container(
+                  width: size,
+                  height: size,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selected
+                        ? FalletterColor.black
+                        : FalletterColor.gray500,
+                  ),
+                );
+              });
+            }(),
           ),
         ),
       ],

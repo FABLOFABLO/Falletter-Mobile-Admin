@@ -10,13 +10,15 @@ enum StudentMenuAction { warn, ban }
 
 const EdgeInsets _kCardPadding20 = EdgeInsets.all(20);
 const double _kCardRadius8 = 8;
+const double width = 8;
 
 class StudentListItem extends StatefulWidget {
   final String numberName;
   final String genderLabel;
   final bool isFemale;
   final List<SanctionSummary> sanctions;
-  final VoidCallback? onTapDetail;
+
+  final void Function(SanctionSummary sanction)? onTapDetail;
   final void Function(StudentMenuAction action)? onMenu;
 
   const StudentListItem({
@@ -72,12 +74,12 @@ class _StudentListItemState extends State<StudentListItem> {
                             widget.numberName,
                             style: FalletterTextStyle.title3,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: width),
                           badgeChip,
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: width),
                     PopupMenuButton<StudentMenuAction>(
                       color: FalletterColor.middleWhite,
                       shape: RoundedRectangleBorder(
