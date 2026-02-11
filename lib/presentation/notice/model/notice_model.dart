@@ -18,7 +18,7 @@ class Notice {
       id: json['id'] as int,
       title: (json['title'] as String?) ?? '',
       authorName: (json['author_name'] as String?) ?? '',
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: _parseUtcDateTime(json['created_at'] as String),
       content: null,
     );
   }
@@ -29,8 +29,15 @@ class Notice {
       title: (json['title'] as String?) ?? '',
       content: (json['content'] as String?) ?? '',
       authorName: (json['author_name'] as String?) ?? '',
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: _parseUtcDateTime(json['created_at'] as String),
     );
+  }
+
+  static DateTime _parseUtcDateTime(String dateStr) {
+    if (!dateStr.endsWith('Z')) {
+      dateStr = '${dateStr}Z';
+    }
+    return DateTime.parse(dateStr).toLocal();
   }
 
   String get preview {
