@@ -1,7 +1,7 @@
 import 'package:falletter_mobile_admin/core/util/date_format.dart';
 import 'package:falletter_mobile_admin/core/network/community_api.dart';
-import 'package:falletter_mobile_admin/feature/community/presentation/domain/model/community_marks_models.dart';
-import 'package:falletter_mobile_admin/feature/community/presentation/domain/model/community_ui_models.dart';
+import 'package:falletter_mobile_admin/feature/community/domain/model/community_marks_models.dart';
+import 'package:falletter_mobile_admin/feature/community/domain/model/community_ui_models.dart';
 
 class CommunityRepository {
   final CommunityApi api;

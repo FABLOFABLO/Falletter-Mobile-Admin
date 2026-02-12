@@ -1,5 +1,5 @@
-import 'package:falletter_mobile_admin/feature/community/presentation/data/repository/community_repository.dart';
-import 'package:falletter_mobile_admin/feature/community/presentation/domain/model/community_ui_models.dart';
+import 'package:falletter_mobile_admin/feature/community/data/repository/community_repository.dart';
+import 'package:falletter_mobile_admin/feature/community/domain/model/community_ui_models.dart';
 import 'package:falletter_mobile_admin/feature/community/presentation/provider/community_marks_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:falletter_mobile_admin/core/network/dio.dart';

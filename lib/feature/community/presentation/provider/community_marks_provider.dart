@@ -1,4 +1,4 @@
-import 'package:falletter_mobile_admin/feature/community/presentation/domain/model/community_marks_models.dart';
+import 'package:falletter_mobile_admin/feature/community/domain/model/community_marks_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final communityMarksProvider =
