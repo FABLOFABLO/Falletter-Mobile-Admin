@@ -1,4 +1,4 @@
-import 'package:falletter_mobile_admin/core/config/app_env.dart';
+import 'package:falletter_mobile_admin/config/app_env.dart';
 
 class ApiEndpoints {
   /// BaseUrl

@@ -5,7 +5,7 @@ import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_mo
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
-import 'package:falletter_mobile_admin/presentation/auth/provider/admin_logout_provider.dart';
+import 'package:falletter_mobile_admin/feature/auth/presentation/provider/admin_logout_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
