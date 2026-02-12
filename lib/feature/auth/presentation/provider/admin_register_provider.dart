@@ -136,12 +136,8 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
       state = state.copyWith(codeSent: true);
       _startVerifyExpiry(seconds: 300);
     } on DioException catch (e) {
-      print('[EMAIL SEND FAIL] ${e.response?.statusCode} ${e.requestOptions.uri}');
-      print('[EMAIL SEND FAIL DATA] ${e.response?.data}');
-
       state = state.copyWith(codeSent: false);
     } catch (e) {
-      print('[EMAIL SEND UNKNOWN] $e');
       state = state.copyWith(codeSent: false);
     } finally {
       state = state.copyWith(isSendingCode: false);
@@ -179,12 +175,8 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
         showErrorBorder: false,
       );
     } on DioException catch (e) {
-      print('[EMAIL MATCH FAIL] ${e.response?.statusCode} ${e.requestOptions.uri}');
-      print('[EMAIL MATCH FAIL DATA] ${e.response?.data}');
-
       state = state.copyWith(showErrorBorder: true);
     } catch (e) {
-      print('[EMAIL MATCH UNKNOWN] $e');
       state = state.copyWith(showErrorBorder: true);
     }
   }
@@ -228,10 +220,8 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
       );
     } on AdminSignUpException catch (e) {
       state = state.copyWith(showErrorBorder: true);
-      print(e);
     } catch (e) {
       state = state.copyWith(showErrorBorder: true);
-      print('[SIGNUP UNKNOWN] $e');
     } finally {
       _isRegistering = false;
     }

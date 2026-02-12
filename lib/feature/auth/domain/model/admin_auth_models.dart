@@ -1,13 +1,6 @@
-enum AdminSignUpErrorType {
-  emailAlreadyExists,
-  network,
-  unknown,
-}
+enum AdminSignUpErrorType { emailAlreadyExists, network, unknown }
 
-enum Gender {
-  male,
-  female,
-}
+enum Gender { male, female }
 
 class AdminSignUpException implements Exception {
   final AdminSignUpErrorType type;
@@ -71,15 +64,9 @@ class AdminSignInRequest {
   final String email;
   final String password;
 
-  const AdminSignInRequest({
-    required this.email,
-    required this.password,
-  });
+  const AdminSignInRequest({required this.email, required this.password});
 
-  Map<String, dynamic> toJson() => {
-    "email": email,
-    "password": password,
-  };
+  Map<String, dynamic> toJson() => {"email": email, "password": password};
 }
 
 class AdminTokenResponse {
