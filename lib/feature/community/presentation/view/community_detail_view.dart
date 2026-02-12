@@ -8,6 +8,7 @@ import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_mo
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/core/provider/sanction_action_provider.dart';
+import 'package:falletter_mobile_admin/feature/community/presentation/domain/model/community_ui_models.dart';
 import 'package:falletter_mobile_admin/feature/community/presentation/provider/community_action_provider.dart';
 import 'package:falletter_mobile_admin/feature/community/presentation/provider/community_marks_provider.dart';
 import 'package:falletter_mobile_admin/feature/community/presentation/provider/community_provider.dart';

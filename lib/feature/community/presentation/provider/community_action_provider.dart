@@ -2,9 +2,9 @@ import 'package:falletter_mobile_admin/feature/community/presentation/provider/c
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final communityActionProvider =
-    StateNotifierProvider<CommunityActionNotifier, AsyncValue<void>>(
+StateNotifierProvider<CommunityActionNotifier, AsyncValue<void>>(
       (ref) => CommunityActionNotifier(ref),
-    );
+);
 
 class CommunityActionNotifier extends StateNotifier<AsyncValue<void>> {
   final Ref _ref;
