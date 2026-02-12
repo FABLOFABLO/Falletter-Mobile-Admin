@@ -1,4 +1,5 @@
 import 'package:falletter_mobile_admin/core/network/dio.dart';
+import 'package:falletter_mobile_admin/core/util/email_format.dart';
 import 'package:falletter_mobile_admin/feature/auth/data/repository/admin_auth_repository.dart';
 import 'package:falletter_mobile_admin/feature/auth/domain/model/admin_auth_models.dart';
 import 'package:falletter_mobile_admin/feature/signin/presentation/provider/signin_state.dart';
@@ -43,13 +44,6 @@ class SigninNotifier extends Notifier<SignInState> {
   }
 
   Future<void> submit() async {
-    String normalizeDsmEmail(String input) {
-      final t = input.trim();
-      if (t.isEmpty) return t;
-      if (t.contains('@')) return t;
-      return '$t@dsm.hs.kr';
-    }
-
     if (!state.canSubmit) {
       state = state.copyWith(showErrorBorder: true);
       return;
@@ -76,23 +70,23 @@ class SigninNotifier extends Notifier<SignInState> {
 
       state = state.copyWith(isSuccess: true);
     } on AdminSignInException catch (e) {
-      switch (e.type) {
-        case AdminSignInErrorType.userNotFound:
-          state = state.copyWith(errorType: SignInErrorType.userNotFound);
-          break;
-        case AdminSignInErrorType.invalidCredential:
-          state = state.copyWith(errorType: SignInErrorType.invalidCredential);
-          break;
-        case AdminSignInErrorType.notApproved:
-          state = state.copyWith(errorType: SignInErrorType.notApproved);
-          break;
-        case AdminSignInErrorType.network:
-        case AdminSignInErrorType.unknown:
-          state = state.copyWith(errorType: SignInErrorType.unknown);
-          break;
-      }
+      state = state.copyWith(errorType: _mapAuthErrorToSignInError(e.type));
     } finally {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+  SignInErrorType _mapAuthErrorToSignInError(AdminSignInErrorType type) {
+    switch (type) {
+      case AdminSignInErrorType.userNotFound:
+        return SignInErrorType.userNotFound;
+      case AdminSignInErrorType.invalidCredential:
+        return SignInErrorType.invalidCredential;
+      case AdminSignInErrorType.notApproved:
+        return SignInErrorType.notApproved;
+      case AdminSignInErrorType.network:
+      case AdminSignInErrorType.unknown:
+        return SignInErrorType.unknown;
     }
   }
 }
