@@ -1,48 +1,42 @@
 import 'package:dio/dio.dart';
-import 'package:falletter_mobile_admin/core/network/api_endpoints.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final accessTokenProvider = StateProvider<String?>((ref) => null);
-final refreshTokenProvider = StateProvider<String?>((ref) => null);
+import 'package:falletter_mobile_admin/core/network/api_endpoints.dart';
+import 'package:falletter_mobile_admin/core/network/auth_api.dart';
+import 'package:falletter_mobile_admin/core/network/auth_interceptor.dart';
+import 'package:falletter_mobile_admin/feature/splash/presentation/provider/auth_status_provider.dart';
 
 class DioClient {
-  late final Dio dio;
+  final Dio dio;
 
-  DioClient({
-    required String? accessToken,
-  }) {
-    dio = Dio(
-      BaseOptions(
-        baseUrl: ApiEndpoints.baseUrl,
-        contentType: Headers.jsonContentType,
-        responseType: ResponseType.json,
-        headers: {
-          Headers.acceptHeader: Headers.jsonContentType,
+  DioClient({required Ref ref})
+    : dio = Dio(
+        BaseOptions(
+          baseUrl: ApiEndpoints.baseUrl,
+          contentType: Headers.jsonContentType,
+          responseType: ResponseType.json,
+          headers: {Headers.acceptHeader: Headers.jsonContentType},
+        ),
+      ) {
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.next(options);
+        },
+        onError: (e, handler) {
+          handler.next(e);
         },
       ),
     );
 
+    final storage = ref.read(tokenStorageProvider);
+    final authApi = AuthApi(dio);
+
     dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          if (accessToken != null && accessToken.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $accessToken';
-          }
-          print('[REQ] ${options.method} ${options.baseUrl}${options.path}');
-          print('[REQ HEADERS] ${options.headers}');
-          handler.next(options);
-        },
-        onError: (e, handler) {
-          print('[DIO ERROR] ${e.response?.statusCode} ${e.requestOptions.uri}');
-          print('[DIO ERROR DATA] ${e.response?.data}');
-          handler.next(e);
-        },
-      ),
+      AuthInterceptor(dio: dio, storage: storage, authApi: authApi),
     );
   }
 }
 
 final dioClientProvider = Provider<DioClient>((ref) {
-  final token = ref.watch(accessTokenProvider);
-  return DioClient(accessToken: token);
+  return DioClient(ref: ref);
 });

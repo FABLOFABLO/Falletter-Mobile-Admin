@@ -1,19 +1,28 @@
+import 'package:falletter_mobile_admin/core/util/jwt_utils.dart';
+import 'package:falletter_mobile_admin/feature/auth/data/datasource/token_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-enum AuthStatus {
-  logIn,
-  notLogIn,
-}
+enum AuthStatus { logIn, notLogIn }
+
+final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
+  return const FlutterSecureStorage();
+});
+
+final tokenStorageProvider = Provider<TokenStorage>((ref) {
+  return TokenStorage(ref.watch(secureStorageProvider));
+});
 
 final authStatusProvider = FutureProvider<AuthStatus>((ref) async {
-  await Future.delayed(const Duration(seconds: 1));
+  final storage = ref.watch(tokenStorageProvider);
+  final refresh = await storage.readRefreshToken();
 
-  /// TODO: secure storage / prefs 에서 토큰 확인
-  final hasToken = false;
+  if (refresh == null || refresh.isEmpty) return AuthStatus.notLogIn;
 
-  if(hasToken) {
-    return AuthStatus.logIn;
-  } else {
+  if (JwtUtils.isExpired(refresh)) {
+    await storage.clear();
     return AuthStatus.notLogIn;
   }
+
+  return AuthStatus.logIn;
 });

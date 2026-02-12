@@ -1,7 +1,6 @@
-import 'dart:async';
-import 'package:falletter_mobile_admin/feature/auth/data/repository/admin_auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:falletter_mobile_admin/core/network/dio.dart';
+import 'package:falletter_mobile_admin/feature/auth/data/repository/admin_auth_repository.dart';
+import 'package:falletter_mobile_admin/feature/splash/presentation/provider/auth_status_provider.dart';
 
 final adminLogoutProvider =
     StateNotifierProvider<AdminLogoutNotifier, AsyncValue<void>>(
@@ -19,8 +18,10 @@ class AdminLogoutNotifier extends StateNotifier<AsyncValue<void>> {
       final repo = _ref.read(adminAuthRepositoryProvider);
       await repo.logout();
 
-      _ref.read(accessTokenProvider.notifier).state = null;
-      _ref.read(refreshTokenProvider.notifier).state = null;
+      final storage = _ref.read(tokenStorageProvider);
+      await storage.clear();
+
+      _ref.invalidate(authStatusProvider);
 
       state = const AsyncData(null);
     } catch (e, st) {

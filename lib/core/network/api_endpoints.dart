@@ -10,6 +10,7 @@ class ApiEndpoints {
   static const emailVerify = "/auth/email/verify";
   static const emailMatch = "/auth/email/match";
   static const logOut = "/admin/auth/logout";
+  static const refreshToken = "/auth/refresh";
 
   /// Letter
   static const letterUnpassed = "/admin/letter/unpassed";

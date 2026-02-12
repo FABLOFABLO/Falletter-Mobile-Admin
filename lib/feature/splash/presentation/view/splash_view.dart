@@ -24,16 +24,14 @@ class _SplashViewState extends ConsumerState<SplashView> {
 
   Future<void> _navigateToNext() async {
     await Future.delayed(const Duration(seconds: 3));
-
     if (!mounted) return;
 
-    final authAsync = ref.read(authStatusProvider);
+    final status = await ref.read(authStatusProvider.future);
 
-    authAsync.whenData((status) {
-      if (status == AuthStatus.logIn) {
-        context.go(RouterPath.letter);
-      }
-    });
+    if (!mounted) return;
+    if (status == AuthStatus.logIn) {
+      context.go(RouterPath.letter);
+    }
   }
 
   @override
@@ -46,9 +44,7 @@ class _SplashViewState extends ConsumerState<SplashView> {
           final isLoggedIn = status == AuthStatus.logIn;
 
           if (isLoggedIn) {
-            return Center(
-              child: SvgPicture.asset('assets/svg/admin_logo.svg'),
-            );
+            return Center(child: SvgPicture.asset('assets/svg/admin_logo.svg'));
           }
 
           return SafeArea(
@@ -56,9 +52,14 @@ class _SplashViewState extends ConsumerState<SplashView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(child: SvgPicture.asset('assets/svg/admin_logo.svg')),
+                  Expanded(
+                    child: SvgPicture.asset('assets/svg/admin_logo.svg'),
+                  ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 40,
+                    ),
                     child: Column(
                       children: [
                         Row(

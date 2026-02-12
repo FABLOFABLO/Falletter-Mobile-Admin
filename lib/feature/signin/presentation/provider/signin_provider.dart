@@ -1,8 +1,8 @@
-import 'package:falletter_mobile_admin/core/network/dio.dart';
 import 'package:falletter_mobile_admin/core/util/email_format.dart';
 import 'package:falletter_mobile_admin/feature/auth/data/repository/admin_auth_repository.dart';
 import 'package:falletter_mobile_admin/feature/auth/domain/model/admin_auth_models.dart';
 import 'package:falletter_mobile_admin/feature/signin/presentation/provider/signin_state.dart';
+import 'package:falletter_mobile_admin/feature/splash/presentation/provider/auth_status_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final signinProvider = NotifierProvider<SigninNotifier, SignInState>(
@@ -64,9 +64,12 @@ class SigninNotifier extends Notifier<SignInState> {
       );
 
       final tokens = await repo.signIn(req);
-
-      ref.read(accessTokenProvider.notifier).state = tokens.accessToken;
-      ref.read(refreshTokenProvider.notifier).state = tokens.refreshToken;
+      final storage = ref.read(tokenStorageProvider);
+      await storage.saveTokens(
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      );
+      ref.invalidate(authStatusProvider);
 
       state = state.copyWith(isSuccess: true);
     } on AdminSignInException catch (e) {
