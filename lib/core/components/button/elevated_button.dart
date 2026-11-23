@@ -46,8 +46,17 @@ class CustomElevatedButton extends StatelessWidget {
             if (states.contains(WidgetState.disabled)) return disabledFg;
             return enabledFg;
           }),
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
-          splashFactory: NoSplash.splashFactory,
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              final isDarkBg =
+                  ThemeData.estimateBrightnessForColor(enabledBg) ==
+                      Brightness.dark;
+              return (isDarkBg ? Colors.white : Colors.black)
+                  .withValues(alpha: 0.12);
+            }
+            return Colors.transparent;
+          }),
+          splashFactory: InkRipple.splashFactory,
           shadowColor: WidgetStateProperty.all(Colors.transparent),
           surfaceTintColor: WidgetStateProperty.all(Colors.transparent),
 
