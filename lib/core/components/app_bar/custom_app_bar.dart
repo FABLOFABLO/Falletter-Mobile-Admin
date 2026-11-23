@@ -14,9 +14,11 @@ import 'package:material_symbols_icons/symbols.dart';
 class CustomAppBar extends ConsumerWidget {
   final String? leftAsset;
   final String? rightAsset;
+  final String? title;
 
   final bool showBack;
   final bool showLogout;
+  final bool showReport;
 
   final double height;
   final EdgeInsetsGeometry padding;
@@ -27,8 +29,10 @@ class CustomAppBar extends ConsumerWidget {
     super.key,
     this.leftAsset,
     this.rightAsset,
+    this.title,
     this.showBack = true,
     this.showLogout = false,
+    this.showReport = false,
     this.height = 40,
     this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
     this.onBack,
@@ -87,6 +91,13 @@ class CustomAppBar extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
+              if (title != null)
+                Text(
+                  title!,
+                  style: FalletterTextStyle.title3,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: showBack
@@ -104,17 +115,31 @@ class CustomAppBar extends ConsumerWidget {
               ),
               Align(
                 alignment: Alignment.centerRight,
-                child: showLogout
-                    ? _icon(
-                        onTap: () => _handleLogout(context, ref),
-                        child: Icon(
-                          Symbols.logout,
-                          size: 22,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showReport)
+                      _icon(
+                        onTap: ()=> context.push(RouterPath.report),
+                        child: const Icon(
+                          Symbols.e911_emergency,
                           color: FalletterColor.red,
                           weight: 600,
                         ),
-                      )
-                    : const SizedBox(width: 40, height: 40),
+                      ),
+                    showLogout
+                        ? _icon(
+                            onTap: () => _handleLogout(context, ref),
+                            child: Icon(
+                              Symbols.logout,
+                              size: 22,
+                              color: FalletterColor.red,
+                              weight: 600,
+                            ),
+                          )
+                        : const SizedBox(width: 40, height: 40),
+                  ],
+                ),
               ),
             ],
           ),

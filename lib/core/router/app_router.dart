@@ -11,9 +11,12 @@ import 'package:falletter_mobile_admin/feature/letter/presentation/view/letter_v
 import 'package:falletter_mobile_admin/feature/notice/presentation/view/notice_detail_view.dart';
 import 'package:falletter_mobile_admin/feature/notice/presentation/view/notice_view.dart';
 import 'package:falletter_mobile_admin/feature/notice/presentation/view/notice_write_view.dart';
+import 'package:falletter_mobile_admin/feature/report/presentation/view/report_detail_view.dart';
+import 'package:falletter_mobile_admin/feature/report/presentation/view/report_list_view.dart';
 import 'package:falletter_mobile_admin/feature/signin/presentation/view/signin_view.dart';
 import 'package:falletter_mobile_admin/feature/splash/presentation/view/splash_view.dart';
 import 'package:falletter_mobile_admin/feature/students/presentation/view/students_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +26,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: RouterPath.splash,
+    initialLocation: kDebugMode ? RouterPath.community : RouterPath.splash,
     routes: [
       GoRoute(
         path: RouterPath.splash,
@@ -41,14 +44,31 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: RouterPath.register,
         builder: (context, state) => const AdminRegisterView(),
       ),
-
+      GoRoute(
+        path: RouterPath.report,
+        builder: (_, __) => const ReportListView(),
+        routes: [
+          GoRoute(
+            path: 'detail',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (context, state) {
+              final reportId = state.extra as int;
+              return ReportDetailView(reportId: reportId);
+            },
+          ),
+        ],
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Scaffold(
             backgroundColor: FalletterColor.background,
             appBar: const PreferredSize(
               preferredSize: Size.fromHeight(70),
-              child: CustomAppBar(showBack: false, showLogout: true),
+              child: CustomAppBar(
+                showBack: false,
+                showLogout: true,
+                showReport: true,
+              ),
             ),
             body: navigationShell,
             bottomNavigationBar: CustomBottomNavigationBar(
@@ -84,12 +104,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) {
                       final postId = state.extra as String;
-                      return CommunityDetailView(
-                        postId: postId,
-                      );
+                      return CommunityDetailView(postId: postId);
                     },
                   ),
-                ]
+                ],
               ),
             ],
           ),

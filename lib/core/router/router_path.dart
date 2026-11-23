@@ -14,4 +14,7 @@ abstract class RouterPath {
   static const noticeWrite = '/notice/write';
   static const noticeDetail = '/notice/detail';
   static const communityDetail = '/community/detail';
+
+  static const report = '/report';
+  static const reportDetail = '/report/detail';
 }
