@@ -21,7 +21,7 @@ class BanReasonBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: FalletterColor.gray200,
+        color: FalletterColor.gray100,
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.all(12),
