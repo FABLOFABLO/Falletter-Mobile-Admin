@@ -72,7 +72,14 @@ class _FalletterNoticeViewState extends ConsumerState<FalletterNoticeView> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: [
                     const SizedBox(height: 260),
-                    Center(child: Text('공지사항이 없습니다.', style: FalletterTextStyle.body2,)),
+                    Center(
+                      child: Text(
+                        state.errorMessage != null
+                            ? '공지사항을 불러오지 못했습니다.'
+                            : '공지사항이 없습니다.',
+                        style: FalletterTextStyle.body2,
+                      ),
+                    ),
                   ],
                 )
               : ListView.builder(
