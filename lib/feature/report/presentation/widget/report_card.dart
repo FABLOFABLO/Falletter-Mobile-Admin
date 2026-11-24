@@ -25,7 +25,10 @@ class ReportCard extends StatelessWidget {
       onTap: onPressed,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: hasTime ? 12 : 16),
+        padding: EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: hasTime ? 12 : 16,
+        ),
         decoration: BoxDecoration(
           color: FalletterColor.middleWhite,
           borderRadius: BorderRadius.circular(8),

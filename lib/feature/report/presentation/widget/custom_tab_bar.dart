@@ -9,9 +9,7 @@ class CustomTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labelStyle = FalletterTextStyle.body2.copyWith(
-      fontSize: 16,
-    );
+    final labelStyle = FalletterTextStyle.body2.copyWith(fontSize: 16);
 
     return TabBar(
       controller: controller,

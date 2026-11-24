@@ -2,7 +2,6 @@ import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:flutter/material.dart';
 
-
 class ReportSection extends StatelessWidget {
   final String label;
   final Widget child;
@@ -16,7 +15,10 @@ class ReportSection extends StatelessWidget {
       children: [
         Text(
           label,
-          style: FalletterTextStyle.body2.copyWith(fontSize: 16, height: 20 / 16),
+          style: FalletterTextStyle.body2.copyWith(
+            fontSize: 16,
+            height: 20 / 16,
+          ),
         ),
         const SizedBox(height: 12),
         child,
@@ -63,7 +65,6 @@ class ReportContentCard extends StatelessWidget {
     );
   }
 }
-
 
 class ReportReasonBox extends StatelessWidget {
   final String reason;
