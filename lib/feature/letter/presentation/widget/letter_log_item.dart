@@ -2,6 +2,7 @@ import 'package:falletter_mobile_admin/core/components/card/base_card_list.dart'
 import 'package:falletter_mobile_admin/core/components/card/card_atoms.dart';
 import 'package:falletter_mobile_admin/core/components/modal/letter_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/letter_modal_ui_model.dart';
+import 'package:falletter_mobile_admin/core/components/snackbar/error_snackbar.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/feature/letter/presentation/provider/letter_provider.dart';
@@ -51,9 +52,7 @@ class LetterLogItem extends ConsumerWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('상세 조회 실패: $e')));
+      showErrorSnackBar(context, e);
     }
   }
 

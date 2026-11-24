@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
+import 'package:falletter_mobile_admin/core/components/snackbar/error_snackbar.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/core/error/app_exception.dart';
 import 'package:falletter_mobile_admin/core/provider/sanction_action_provider.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/feature/community/presentation/provider/community_action_provider.dart';
@@ -65,7 +67,10 @@ class _FalletterCommunityViewState
           unawaited(
             ref
                 .read(sanctionActionProvider.notifier)
-                .block(userId: userId, days: days, reason: reason),
+                .block(userId: userId, days: days, reason: reason)
+                .catchError((Object e) {
+                  if (context.mounted) showErrorSnackBar(context, e);
+                }),
           );
           ref
               .read(communityMarksProvider.notifier)
@@ -84,21 +89,26 @@ class _FalletterCommunityViewState
     required int userId,
     required PostMenuAction action,
   }) async {
-    switch (action) {
-      case PostMenuAction.warn:
-        await ref.read(sanctionActionProvider.notifier).warn(userId);
-        ref.read(communityMarksProvider.notifier).markPostWarned(postId, true);
-        ref.invalidate(communityPostsProvider);
-        break;
+    try {
+      switch (action) {
+        case PostMenuAction.warn:
+          await ref.read(sanctionActionProvider.notifier).warn(userId);
+          ref.read(communityMarksProvider.notifier).markPostWarned(postId, true);
+          ref.invalidate(communityPostsProvider);
+          break;
 
-      case PostMenuAction.ban:
-        _openBanModal(context, ref, postId: postId, userId: userId);
-        break;
+        case PostMenuAction.ban:
+          _openBanModal(context, ref, postId: postId, userId: userId);
+          break;
 
-      case PostMenuAction.delete:
-        await ref.read(communityActionProvider.notifier).deletePost(postId);
-        ref.invalidate(communityPostsProvider);
-        break;
+        case PostMenuAction.delete:
+          await ref.read(communityActionProvider.notifier).deletePost(postId);
+          ref.invalidate(communityPostsProvider);
+          break;
+      }
+    } on AppException catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(context, e);
     }
   }
 

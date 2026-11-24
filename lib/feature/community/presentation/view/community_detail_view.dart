@@ -5,8 +5,11 @@ import 'package:falletter_mobile_admin/core/components/button/more_action_button
 import 'package:falletter_mobile_admin/core/components/card/detail_card.dart';
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
+import 'package:falletter_mobile_admin/core/components/snackbar/error_snackbar.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/core/error/app_error_type.dart';
+import 'package:falletter_mobile_admin/core/error/app_exception.dart';
 import 'package:falletter_mobile_admin/core/provider/sanction_action_provider.dart';
 import 'package:falletter_mobile_admin/feature/community/domain/model/community_ui_models.dart';
 import 'package:falletter_mobile_admin/feature/community/presentation/provider/community_action_provider.dart';
@@ -36,7 +39,10 @@ class CommunityDetailView extends ConsumerWidget {
           unawaited(
             ref
                 .read(sanctionActionProvider.notifier)
-                .block(userId: userId, days: days, reason: reason),
+                .block(userId: userId, days: days, reason: reason)
+                .catchError((Object e) {
+                  if (context.mounted) showErrorSnackBar(context, e);
+                }),
           );
           onMarkedBanned();
         },
@@ -51,26 +57,31 @@ class CommunityDetailView extends ConsumerWidget {
     PostUi post,
     PostMenuAction action,
   ) async {
-    switch (action) {
-      case PostMenuAction.warn:
-        await ref.read(sanctionActionProvider.notifier).warn(post.authorUserId);
-        ref.read(communityMarksProvider.notifier).markPostWarned(postId, true);
-        break;
+    try {
+      switch (action) {
+        case PostMenuAction.warn:
+          await ref.read(sanctionActionProvider.notifier).warn(post.authorUserId);
+          ref.read(communityMarksProvider.notifier).markPostWarned(postId, true);
+          break;
 
-      case PostMenuAction.ban:
-        _openBanModalForUser(
-          context,
-          ref,
-          userId: post.authorUserId,
-          onMarkedBanned: () => ref
-              .read(communityMarksProvider.notifier)
-              .markPostBanned(postId, true),
-        );
-        break;
+        case PostMenuAction.ban:
+          _openBanModalForUser(
+            context,
+            ref,
+            userId: post.authorUserId,
+            onMarkedBanned: () => ref
+                .read(communityMarksProvider.notifier)
+                .markPostBanned(postId, true),
+          );
+          break;
 
-      case PostMenuAction.delete:
-        await ref.read(communityActionProvider.notifier).deletePost(postId);
-        break;
+        case PostMenuAction.delete:
+          await ref.read(communityActionProvider.notifier).deletePost(postId);
+          break;
+      }
+    } on AppException catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(context, e);
     }
   }
 
@@ -80,32 +91,37 @@ class CommunityDetailView extends ConsumerWidget {
     CommentUi comment,
     CommentMenuAction action,
   ) async {
-    switch (action) {
-      case CommentMenuAction.warn:
-        await ref
-            .read(sanctionActionProvider.notifier)
-            .warn(comment.authorUserId);
-        ref
-            .read(communityMarksProvider.notifier)
-            .markCommentWarned(postId, comment.id, true);
-        break;
-
-      case CommentMenuAction.ban:
-        _openBanModalForUser(
-          context,
-          ref,
-          userId: comment.authorUserId,
-          onMarkedBanned: () => ref
+    try {
+      switch (action) {
+        case CommentMenuAction.warn:
+          await ref
+              .read(sanctionActionProvider.notifier)
+              .warn(comment.authorUserId);
+          ref
               .read(communityMarksProvider.notifier)
-              .markCommentBanned(postId, comment.id, true),
-        );
-        break;
+              .markCommentWarned(postId, comment.id, true);
+          break;
 
-      case CommentMenuAction.delete:
-        ref
-            .read(communityMarksProvider.notifier)
-            .markCommentDeletedByAdmin(postId, comment.id, true);
-        break;
+        case CommentMenuAction.ban:
+          _openBanModalForUser(
+            context,
+            ref,
+            userId: comment.authorUserId,
+            onMarkedBanned: () => ref
+                .read(communityMarksProvider.notifier)
+                .markCommentBanned(postId, comment.id, true),
+          );
+          break;
+
+        case CommentMenuAction.delete:
+          ref
+              .read(communityMarksProvider.notifier)
+              .markCommentDeletedByAdmin(postId, comment.id, true);
+          break;
+      }
+    } on AppException catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(context, e);
     }
   }
 
@@ -122,7 +138,12 @@ class CommunityDetailView extends ConsumerWidget {
           child: Column(
             children: [
               CustomAppBar(showBack: true, showLogout: false),
-              Expanded(child: Center(child: Text('게시글을 불러오는 중 오류가 발생했어요: $e'))),
+              Expanded(child: Center(child: Text(
+                    e is AppException
+                        ? e.type.message
+                        : AppErrorType.unknown.message,
+                    style: FalletterTextStyle.body2,
+                  ))),
             ],
           ),
         ),

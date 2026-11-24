@@ -3,8 +3,11 @@ import 'package:falletter_mobile_admin/core/components/button/more_action_button
 import 'package:falletter_mobile_admin/core/components/card/detail_card.dart';
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
 import 'package:falletter_mobile_admin/core/components/modal/ui_model/default_modal_ui_model.dart';
+import 'package:falletter_mobile_admin/core/components/snackbar/error_snackbar.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/core/error/app_error_type.dart';
+import 'package:falletter_mobile_admin/core/error/app_exception.dart';
 import 'package:falletter_mobile_admin/feature/notice/presentation/provider/notice_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +33,15 @@ class _NoticeDetailViewState extends ConsumerState<NoticeDetailView> {
         model: DefaultModalUiModel.delete(),
         onConfirmDelete: () async {
           setState(() => _isDeleted = true);
-          await ref.read(noticeProvider.notifier).deleteNotice(widget.noticeId);
+          try {
+            await ref
+                .read(noticeProvider.notifier)
+                .deleteNotice(widget.noticeId);
+          } on AppException catch (e) {
+            if (!mounted) return;
+            setState(() => _isDeleted = false);
+            showErrorSnackBar(context, e);
+          }
         },
       ),
     );
@@ -65,6 +76,27 @@ class _NoticeDetailViewState extends ConsumerState<NoticeDetailView> {
           .read(noticeProvider.notifier)
           .fetchNoticeDetail(widget.noticeId),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          final error = snapshot.error;
+          final type =
+              error is AppException ? error.type : AppErrorType.unknown;
+          return Scaffold(
+            backgroundColor: FalletterColor.background,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  const CustomAppBar(showBack: true),
+                  Expanded(
+                    child: Center(
+                      child: Text(type.message, style: FalletterTextStyle.body2),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         if (!snapshot.hasData) {
           return Scaffold(
             backgroundColor: FalletterColor.background,

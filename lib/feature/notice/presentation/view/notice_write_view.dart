@@ -2,6 +2,8 @@ import 'package:falletter_mobile_admin/core/components/app_bar/custom_app_bar.da
 import 'package:falletter_mobile_admin/core/components/button/elevated_button.dart';
 import 'package:falletter_mobile_admin/core/components/text_form_field/text_form_field.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
+import 'package:falletter_mobile_admin/core/components/snackbar/error_snackbar.dart';
+import 'package:falletter_mobile_admin/core/error/app_exception.dart';
 import 'package:falletter_mobile_admin/feature/notice/presentation/provider/notice_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,7 @@ class NoticeWriteView extends ConsumerStatefulWidget {
 class _NoticeWriteViewState extends ConsumerState<NoticeWriteView> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+  bool _isSaving = false;
 
   bool get _canSave =>
       _titleController.text.trim().isNotEmpty &&
@@ -40,15 +43,26 @@ class _NoticeWriteViewState extends ConsumerState<NoticeWriteView> {
     super.dispose();
   }
 
-  void _onSave() async {
-    await ref
-        .read(noticeProvider.notifier)
-        .createNotice(
-          title: _titleController.text,
-          content: _contentController.text,
-        );
-    if (!mounted) return;
-    Navigator.of(context).pop();
+  Future<void> _onSave() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+
+    try {
+      await ref
+          .read(noticeProvider.notifier)
+          .createNotice(
+            title: _titleController.text,
+            content: _contentController.text,
+          );
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } on AppException catch (e) {
+      if (!mounted) return;
+      // 하단 고정 저장 버튼(52) + 여백(20) 위에 표시
+      showErrorSnackBar(context, e, bottomMargin: 84);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -112,7 +126,7 @@ class _NoticeWriteViewState extends ConsumerState<NoticeWriteView> {
                     viewInsetsBottom + 20,
                   ),
                   child: CustomElevatedButton(
-                    onPressed: _canSave ? _onSave : null,
+                    onPressed: _canSave && !_isSaving ? _onSave : null,
                     child: const Text('저장'),
                   ),
                 ),

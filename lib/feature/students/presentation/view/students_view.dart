@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:falletter_mobile_admin/core/components/snackbar/error_snackbar.dart';
+import 'package:falletter_mobile_admin/core/error/app_exception.dart';
 
 import 'package:falletter_mobile_admin/core/components/button/more_action_button.dart';
 import 'package:falletter_mobile_admin/core/components/modal/default_modal.dart';
@@ -162,9 +164,14 @@ class _FalletterStudentsViewState extends ConsumerState<FalletterStudentsView> {
       builder: (_) => DefaultModal(
         model: DefaultModalUiModel.ban(),
         onConfirmBan: (days, reason) async {
-          await ref
-              .read(studentsActionProvider.notifier)
-              .block(userId: userId, days: days, reason: reason);
+          try {
+            await ref
+                .read(studentsActionProvider.notifier)
+                .block(userId: userId, days: days, reason: reason);
+          } on AppException catch (e) {
+            if (mounted) showErrorSnackBar(context, e);
+            return;
+          }
 
           ref.invalidate(studentsListProvider);
           ref.invalidate(studentDetailProvider(userId));
@@ -181,7 +188,12 @@ class _FalletterStudentsViewState extends ConsumerState<FalletterStudentsView> {
     }
 
     if (action == StudentMenuAction.warn) {
-      await ref.read(studentsActionProvider.notifier).warn(userId);
+      try {
+        await ref.read(studentsActionProvider.notifier).warn(userId);
+      } on AppException catch (e) {
+        if (mounted) showErrorSnackBar(context, e);
+        return;
+      }
       ref.invalidate(studentsListProvider);
       ref.invalidate(studentDetailProvider(userId));
     }
