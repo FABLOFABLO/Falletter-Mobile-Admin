@@ -1,6 +1,7 @@
 import 'package:falletter_mobile_admin/core/components/app_bar/custom_app_bar.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
+import 'package:falletter_mobile_admin/feature/report/presentation/provider/report_detail_provider.dart';
 import 'package:falletter_mobile_admin/feature/report/presentation/widget/category_button.dart';
 import 'package:falletter_mobile_admin/feature/report/presentation/widget/custom_tab_bar.dart';
 import 'package:falletter_mobile_admin/feature/report/presentation/widget/report_card.dart';
@@ -33,6 +34,11 @@ class _ReportListViewState extends State<ReportListView>
 
   @override
   Widget build(BuildContext context) {
+    final category = ReportCategory.values[_selectedIndex];
+    final reportIds = dummyReportIds
+        .where((id) => category.matches(dummyReportTypeOf(id)))
+        .toList();
+
     return Scaffold(
       backgroundColor: FalletterColor.background,
       body: SafeArea(
@@ -57,10 +63,11 @@ class _ReportListViewState extends State<ReportListView>
               Expanded(
                 child: ListView.separated(
                   itemBuilder: (context, int index) {
+                    final reportId = reportIds[index];
                     return ReportCard(
                       onPressed: () => context.push(
                         RouterPath.reportDetail,
-                        extra: index,
+                        extra: reportId,
                       ),
                       time: '2026.07.06',
                       studentInfo: '2100 이지아',
@@ -68,7 +75,7 @@ class _ReportListViewState extends State<ReportListView>
                   },
                   separatorBuilder: (context, int index) =>
                       const SizedBox(height: 12),
-                  itemCount: 10,
+                  itemCount: reportIds.length,
                 ),
               ),
             ],

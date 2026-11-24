@@ -16,8 +16,15 @@ class ReportDetailNotifier extends StateNotifier<ReportDetail> {
 }
 
 // TODO: API 스펙 확정 후 제거
+const dummyReportIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+// TODO: API 스펙 확정 후 제거
+ReportType dummyReportTypeOf(int id) =>
+    id.isEven ? ReportType.community : ReportType.letter;
+
+// TODO: API 스펙 확정 후 제거
 ReportDetail _dummyReport(int id) {
-  if (id.isEven) {
+  if (dummyReportTypeOf(id) == ReportType.community) {
     return ReportDetail(
       id: id,
       type: ReportType.community,

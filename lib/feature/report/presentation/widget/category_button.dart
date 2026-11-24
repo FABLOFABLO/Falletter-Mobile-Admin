@@ -1,14 +1,18 @@
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
+import 'package:falletter_mobile_admin/feature/report/domain/model/report_detail.dart';
 import 'package:flutter/material.dart';
 
 enum ReportCategory {
-  all('전체'),
-  community('커뮤니티'),
-  letter('레터');
+  all('전체', null),
+  community('커뮤니티', ReportType.community),
+  letter('레터', ReportType.letter);
 
-  const ReportCategory(this.label);
+  const ReportCategory(this.label, this.type);
   final String label;
+  final ReportType? type;
+
+  bool matches(ReportType reportType) => type == null || type == reportType;
 }
 
 class CategoryButton extends StatelessWidget {
