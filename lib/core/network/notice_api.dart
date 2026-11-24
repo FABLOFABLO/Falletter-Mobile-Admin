@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:falletter_mobile_admin/core/error/dio_error_mapper.dart';
 import 'package:falletter_mobile_admin/core/network/api_endpoints.dart';
 
 class NoticeApi {
   final Dio _dio;
   NoticeApi(this._dio);
 
-  Future<List<Map<String, dynamic>>> fetchNoticesRaw() async {
+  Future<List<Map<String, dynamic>>> fetchNoticesRaw() => guardApi(() async {
     final res = await _dio.get(ApiEndpoints.notice);
 
     final data = res.data;
@@ -13,32 +14,26 @@ class NoticeApi {
       return data.map((e) => (e as Map).cast<String, dynamic>()).toList();
     }
     return [];
-  }
+  });
 
-  Future<Map<String, dynamic>> fetchNoticeDetailRaw(int id) async {
-    final res = await _dio.get(
-      ApiEndpoints.noticeDetailDelete(id.toString()),
-    );
+  Future<Map<String, dynamic>> fetchNoticeDetailRaw(int id) =>
+      guardApi(() async {
+        final res = await _dio.get(
+          ApiEndpoints.noticeDetailDelete(id.toString()),
+        );
 
-    return (res.data as Map).cast<String, dynamic>();
-  }
+        return (res.data as Map).cast<String, dynamic>();
+      });
 
-  Future<void> createNotice({
-    required String title,
-    required String content,
-  }) async {
-    await _dio.post(
-      ApiEndpoints.notice,
-      data: {
-        "title": title,
-        "content": content,
-      },
-    );
-  }
+  Future<void> createNotice({required String title, required String content}) =>
+      guardApi(() async {
+        await _dio.post(
+          ApiEndpoints.notice,
+          data: {"title": title, "content": content},
+        );
+      });
 
-  Future<void> deleteNotice(int id) async {
-    await _dio.delete(
-      ApiEndpoints.noticeDetailDelete(id.toString()),
-    );
-  }
+  Future<void> deleteNotice(int id) => guardApi(() async {
+    await _dio.delete(ApiEndpoints.noticeDetailDelete(id.toString()));
+  });
 }
