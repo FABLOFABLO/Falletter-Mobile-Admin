@@ -1,18 +1,37 @@
 import 'package:falletter_mobile_admin/feature/report/domain/model/report_detail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final reportDetailProvider = StateNotifierProvider.autoDispose
-    .family<ReportDetailNotifier, ReportDetail, int>(
-  (ref, reportId) => ReportDetailNotifier(_dummyReport(reportId)),
+// TODO: API 연동 시 서버에서 받은 신고 목록 상태로 대체
+final reportStatusesProvider = StateProvider<Map<int, ReportStatus>>(
+  (ref) => {for (final id in dummyReportIds) id: _dummyReportStatusOf(id)},
 );
 
+final reportDetailProvider = StateNotifierProvider.autoDispose
+    .family<ReportDetailNotifier, ReportDetail, int>((ref, reportId) {
+      final status =
+          ref.read(reportStatusesProvider)[reportId] ?? ReportStatus.pending;
+      return ReportDetailNotifier(
+        ref,
+        _dummyReport(reportId).copyWith(status: status),
+      );
+    });
+
 class ReportDetailNotifier extends StateNotifier<ReportDetail> {
-  ReportDetailNotifier(super.state);
+  ReportDetailNotifier(this._ref, super.state);
+
+  final Ref _ref;
 
   // TODO: API 연동 시 서버 요청 후 상태 갱신
-  void reject() => state = state.copyWith(status: ReportStatus.rejected);
+  void reject() => _updateStatus(ReportStatus.rejected);
 
-  void complete() => state = state.copyWith(status: ReportStatus.completed);
+  void complete() => _updateStatus(ReportStatus.completed);
+
+  void _updateStatus(ReportStatus status) {
+    state = state.copyWith(status: status);
+    _ref
+        .read(reportStatusesProvider.notifier)
+        .update((statuses) => {...statuses, state.id: status});
+  }
 }
 
 // TODO: API 스펙 확정 후 제거
@@ -21,6 +40,13 @@ const dummyReportIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 // TODO: API 스펙 확정 후 제거
 ReportType dummyReportTypeOf(int id) =>
     id.isEven ? ReportType.community : ReportType.letter;
+
+// TODO: API 스펙 확정 후 제거
+ReportStatus _dummyReportStatusOf(int id) {
+  if (id < 6) return ReportStatus.pending;
+  if (id < 8) return ReportStatus.rejected;
+  return ReportStatus.completed;
+}
 
 // TODO: API 스펙 확정 후 제거
 ReportDetail _dummyReport(int id) {
