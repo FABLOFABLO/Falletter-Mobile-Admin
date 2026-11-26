@@ -29,10 +29,7 @@ class BottomNavBarItem extends StatelessWidget {
                 : Icon(icon, color: FalletterColor.gray800, fill: 1),
             const SizedBox(height: 4),
             isSelected
-                ? Text(
-                    label,
-                    style: FalletterTextStyle.body3,
-                  )
+                ? Text(label, style: FalletterTextStyle.body3)
                 : Text(
                     label,
                     style: FalletterTextStyle.body3.copyWith(

@@ -2,9 +2,9 @@ import 'package:falletter_mobile_admin/feature/community/domain/model/community_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final communityMarksProvider =
-StateNotifierProvider<CommunityMarksNotifier, CommunityMarksState>(
+    StateNotifierProvider<CommunityMarksNotifier, CommunityMarksState>(
       (ref) => CommunityMarksNotifier(),
-);
+    );
 
 class CommunityMarksNotifier extends StateNotifier<CommunityMarksState> {
   CommunityMarksNotifier() : super(const CommunityMarksState());

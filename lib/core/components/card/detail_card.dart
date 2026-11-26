@@ -34,23 +34,14 @@ class DetailCard extends StatelessWidget {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _MetaLine(
-            writer: writer,
-            timeText: timeText,
-            badge: badge,
-          ),
+          _MetaLine(writer: writer, timeText: timeText, badge: badge),
           const SizedBox(height: 10),
-          Text(
-            title,
-            style: FalletterTextStyle.subTitle2,
-          ),
+          Text(title, style: FalletterTextStyle.subTitle2),
         ],
       ),
       body: Text(
         content,
-        style: FalletterTextStyle.body4.copyWith(
-          color: FalletterColor.gray700,
-        ),
+        style: FalletterTextStyle.body4.copyWith(color: FalletterColor.gray700),
       ),
       footer: footer,
       menuItems: menuItems,
@@ -64,11 +55,7 @@ class _MetaLine extends StatelessWidget {
   final String timeText;
   final Widget? badge;
 
-  const _MetaLine({
-    required this.writer,
-    required this.timeText,
-    this.badge,
-  });
+  const _MetaLine({required this.writer, required this.timeText, this.badge});
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +74,9 @@ class _MetaLine extends StatelessWidget {
         ),
         if (badge != null) ...[
           const SizedBox(width: 10),
-          Expanded(child: Align(alignment: Alignment.centerLeft, child: badge!)),
+          Expanded(
+            child: Align(alignment: Alignment.centerLeft, child: badge!),
+          ),
         ],
       ],
     );

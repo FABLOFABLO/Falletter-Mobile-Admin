@@ -17,17 +17,19 @@ class AdminRegisterInfoView extends StatelessWidget {
   final TextEditingController verifyController;
 
   final InputDecoration Function({
-  required String label,
-  required String hint,
-  Widget? suffixIcon,
-  required bool showError,
-  }) decorationBuilder;
+    required String label,
+    required String hint,
+    Widget? suffixIcon,
+    required bool showError,
+  })
+  decorationBuilder;
 
   final Widget Function({
-  required String label,
-  required VoidCallback onPressed,
-  required bool selected,
-  }) outlinedButtonBuilder;
+    required String label,
+    required VoidCallback onPressed,
+    required bool selected,
+  })
+  outlinedButtonBuilder;
 
   const AdminRegisterInfoView({
     super.key,
@@ -63,9 +65,11 @@ class AdminRegisterInfoView extends StatelessWidget {
                 builder: (context, constraints) {
                   return SingleChildScrollView(
                     keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
                       child: IntrinsicHeight(
                         child: Column(
                           children: [
@@ -83,7 +87,10 @@ class AdminRegisterInfoView extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('어드민 등록', style: FalletterTextStyle.title2),
+                                  Text(
+                                    '어드민 등록',
+                                    style: FalletterTextStyle.title2,
+                                  ),
                                   const SizedBox(height: 42),
 
                                   Padding(
@@ -93,18 +100,20 @@ class AdminRegisterInfoView extends StatelessWidget {
                                         Expanded(
                                           child: outlinedButtonBuilder(
                                             label: '남성',
-                                            selected: state.gender == Gender.male,
-                                            onPressed: () =>
-                                                notifier.selectGender(Gender.male),
+                                            selected:
+                                                state.gender == Gender.male,
+                                            onPressed: () => notifier
+                                                .selectGender(Gender.male),
                                           ),
                                         ),
                                         const SizedBox(width: 14),
                                         Expanded(
                                           child: outlinedButtonBuilder(
                                             label: '여성',
-                                            selected: state.gender == Gender.female,
-                                            onPressed: () =>
-                                                notifier.selectGender(Gender.female),
+                                            selected:
+                                                state.gender == Gender.female,
+                                            onPressed: () => notifier
+                                                .selectGender(Gender.female),
                                           ),
                                         ),
                                       ],
@@ -121,7 +130,9 @@ class AdminRegisterInfoView extends StatelessWidget {
                                       label: '이름',
                                       hint: '이름을 입력해주세요.',
                                       suffixIcon: null,
-                                      showError: showError && state.name.trim().isEmpty,
+                                      showError:
+                                          showError &&
+                                          state.name.trim().isEmpty,
                                     ),
                                   ),
 
@@ -135,7 +146,8 @@ class AdminRegisterInfoView extends StatelessWidget {
                                       label: '이메일',
                                       hint: '이메일을 입력해주세요.',
                                       suffixIcon: FieldIcon.emailText(),
-                                      showError: showError &&
+                                      showError:
+                                          showError &&
                                           state.emailLocalPart.trim().isEmpty,
                                     ),
                                   ),
@@ -155,18 +167,23 @@ class AdminRegisterInfoView extends StatelessWidget {
                                             color: FalletterColor.gray500,
                                           ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(6),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                           ),
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 10,
                                           ),
                                         ),
                                         child: Text(
-                                          state.isSendingCode ? '전송중...' : '인증번호 전송',
-                                          style: FalletterTextStyle.body4.copyWith(
-                                            color: FalletterColor.gray800,
-                                            fontWeight: FontWeight.w400,
-                                          ),
+                                          state.isSendingCode
+                                              ? '전송중...'
+                                              : '인증번호 전송',
+                                          style: FalletterTextStyle.body4
+                                              .copyWith(
+                                                color: FalletterColor.gray800,
+                                                fontWeight: FontWeight.w400,
+                                              ),
                                         ),
                                       ),
                                     ),
@@ -185,7 +202,8 @@ class AdminRegisterInfoView extends StatelessWidget {
                                       label: '인증번호',
                                       hint: '인증번호를 입력해주세요.',
                                       suffixIcon: null,
-                                      showError: showError &&
+                                      showError:
+                                          showError &&
                                           state.verifyCode.trim().isEmpty,
                                     ),
                                   ),
@@ -218,9 +236,16 @@ class AdminRegisterInfoView extends StatelessWidget {
                 child: AnimatedPadding(
                   duration: const Duration(milliseconds: 180),
                   curve: Curves.easeOut,
-                  padding: EdgeInsets.fromLTRB(20, 0, 20, viewInsetsBottom + 20),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    viewInsetsBottom + 20,
+                  ),
                   child: CustomElevatedButton(
-                    onPressed: state.canGoNextInfo ? notifier.nextToPassword : null,
+                    onPressed: state.canGoNextInfo
+                        ? notifier.nextToPassword
+                        : null,
                     child: const Text('다음'),
                   ),
                 ),

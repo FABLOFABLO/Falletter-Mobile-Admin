@@ -9,10 +9,7 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-        radius: size,
-        backgroundColor: FalletterColor.gray400,
-    );
+    return CircleAvatar(radius: size, backgroundColor: FalletterColor.gray400);
   }
 }
 
@@ -20,11 +17,7 @@ class BadgeChip extends StatelessWidget {
   final String text;
   final Color badgeColor;
 
-  const BadgeChip({
-    super.key,
-    required this.text,
-    required this.badgeColor
-  });
+  const BadgeChip({super.key, required this.text, required this.badgeColor});
 
   @override
   Widget build(BuildContext context) {

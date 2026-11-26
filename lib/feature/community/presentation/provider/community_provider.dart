@@ -15,16 +15,17 @@ final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
   return CommunityRepository(api: api);
 });
 
-final communityPostsProvider =
-FutureProvider.autoDispose<List<PostUi>>((ref) async {
+final communityPostsProvider = FutureProvider.autoDispose<List<PostUi>>((
+  ref,
+) async {
   final repo = ref.watch(communityRepositoryProvider);
   final marks = ref.watch(communityMarksProvider);
   return repo.fetchPosts(marks: marks);
 });
 
-final communityPostDetailProvider =
-FutureProvider.autoDispose.family<PostDetailUi, String>((ref, postId) async {
-  final repo = ref.watch(communityRepositoryProvider);
-  final marks = ref.watch(communityMarksProvider);
-  return repo.fetchPostDetail(postId: postId, marks: marks);
-});
+final communityPostDetailProvider = FutureProvider.autoDispose
+    .family<PostDetailUi, String>((ref, postId) async {
+      final repo = ref.watch(communityRepositoryProvider);
+      final marks = ref.watch(communityMarksProvider);
+      return repo.fetchPostDetail(postId: postId, marks: marks);
+    });

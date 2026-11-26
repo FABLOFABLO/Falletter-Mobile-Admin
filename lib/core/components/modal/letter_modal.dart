@@ -28,10 +28,7 @@ class LetterModal extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: FalletterColor.white,
-                border: Border.all(
-                  color: FalletterColor.black,
-                  width: 2,
-                ),
+                border: Border.all(color: FalletterColor.black, width: 2),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(

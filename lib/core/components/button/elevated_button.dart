@@ -50,9 +50,10 @@ class CustomElevatedButton extends StatelessWidget {
             if (states.contains(WidgetState.pressed)) {
               final isDarkBg =
                   ThemeData.estimateBrightnessForColor(enabledBg) ==
-                      Brightness.dark;
-              return (isDarkBg ? Colors.white : Colors.black)
-                  .withValues(alpha: 0.12);
+                  Brightness.dark;
+              return (isDarkBg ? Colors.white : Colors.black).withValues(
+                alpha: 0.12,
+              );
             }
             return Colors.transparent;
           }),

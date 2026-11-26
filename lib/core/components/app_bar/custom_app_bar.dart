@@ -120,7 +120,7 @@ class CustomAppBar extends ConsumerWidget {
                   children: [
                     if (showReport)
                       _icon(
-                        onTap: ()=> context.push(RouterPath.report),
+                        onTap: () => context.push(RouterPath.report),
                         child: const Icon(
                           Symbols.e911_emergency,
                           color: FalletterColor.red,

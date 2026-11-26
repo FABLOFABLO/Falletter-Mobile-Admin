@@ -10,7 +10,7 @@ abstract final class FalletterColor {
   static const Color blue = Color(0xFF68A4FF);
   static const Color yellow = Color(0xFFF8C703);
 
-  static const Color gray50  = Color(0xFFEDEDED);
+  static const Color gray50 = Color(0xFFEDEDED);
   static const Color gray100 = Color(0xFFEAEAEA);
   static const Color gray200 = Color(0xFF8F8F8F);
   static const Color gray300 = Color(0xFFE5E5E5);

@@ -15,9 +15,9 @@ enum AdminRegisterErrorType {
 }
 
 final adminRegisterProvider =
-NotifierProvider<AdminRegisterNotifier, AdminRegisterState>(
-  AdminRegisterNotifier.new,
-);
+    NotifierProvider<AdminRegisterNotifier, AdminRegisterState>(
+      AdminRegisterNotifier.new,
+    );
 
 class AdminRegisterState {
   final AdminRegisterStep step;
@@ -59,16 +59,16 @@ class AdminRegisterState {
 
   bool get canGoNextInfo =>
       gender != null &&
-          name.trim().isNotEmpty &&
-          emailLocalPart.trim().isNotEmpty &&
-          verifyCode.trim().isNotEmpty &&
-          codeSent &&
-          verifyExpiresSecondsLeft > 0;
+      name.trim().isNotEmpty &&
+      emailLocalPart.trim().isNotEmpty &&
+      verifyCode.trim().isNotEmpty &&
+      codeSent &&
+      verifyExpiresSecondsLeft > 0;
 
   bool get canRegister =>
       password.trim().isNotEmpty &&
-          passwordConfirm.trim().isNotEmpty &&
-          password == passwordConfirm;
+      passwordConfirm.trim().isNotEmpty &&
+      password == passwordConfirm;
 
   AdminRegisterState copyWith({
     AdminRegisterStep? step,
@@ -96,12 +96,12 @@ class AdminRegisterState {
       passwordConfirm: passwordConfirm ?? this.passwordConfirm,
       obscurePassword: obscurePassword ?? this.obscurePassword,
       obscurePasswordConfirm:
-      obscurePasswordConfirm ?? this.obscurePasswordConfirm,
+          obscurePasswordConfirm ?? this.obscurePasswordConfirm,
       showErrorBorder: showErrorBorder ?? this.showErrorBorder,
       isSendingCode: isSendingCode ?? this.isSendingCode,
       codeSent: codeSent ?? this.codeSent,
       verifyExpiresSecondsLeft:
-      verifyExpiresSecondsLeft ?? this.verifyExpiresSecondsLeft,
+          verifyExpiresSecondsLeft ?? this.verifyExpiresSecondsLeft,
       errorType: errorType ?? this.errorType,
     );
   }
@@ -119,17 +119,23 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
     return const AdminRegisterState();
   }
 
-  void selectGender(Gender gender) =>
-      state = state.copyWith(gender: gender, errorType: AdminRegisterErrorType.none);
+  void selectGender(Gender gender) => state = state.copyWith(
+    gender: gender,
+    errorType: AdminRegisterErrorType.none,
+  );
 
   void setName(String v) =>
       state = state.copyWith(name: v, errorType: AdminRegisterErrorType.none);
 
-  void setEmailLocalPart(String v) =>
-      state = state.copyWith(emailLocalPart: v, errorType: AdminRegisterErrorType.none);
+  void setEmailLocalPart(String v) => state = state.copyWith(
+    emailLocalPart: v,
+    errorType: AdminRegisterErrorType.none,
+  );
 
-  void setVerifyCode(String v) =>
-      state = state.copyWith(verifyCode: v, errorType: AdminRegisterErrorType.none);
+  void setVerifyCode(String v) => state = state.copyWith(
+    verifyCode: v,
+    errorType: AdminRegisterErrorType.none,
+  );
 
   Future<void> sendVerifyCode() async {
     state = state.copyWith(
@@ -234,7 +240,8 @@ class AdminRegisterNotifier extends Notifier<AdminRegisterState> {
       state = state.copyWith(obscurePassword: !state.obscurePassword);
 
   void toggleObscurePasswordConfirm() => state = state.copyWith(
-      obscurePasswordConfirm: !state.obscurePasswordConfirm);
+    obscurePasswordConfirm: !state.obscurePasswordConfirm,
+  );
 
   Future<void> register() async {
     state = state.copyWith(showErrorBorder: true);

@@ -29,13 +29,13 @@ class DefaultModalState {
 
 class DefaultModalController extends StateNotifier<DefaultModalState> {
   DefaultModalController({required int initialDay})
-      : super(
-    DefaultModalState(
-      selectedDays: initialDay,
-      reason: '',
-      isReasonFocused: false,
-    ),
-  );
+    : super(
+        DefaultModalState(
+          selectedDays: initialDay,
+          reason: '',
+          isReasonFocused: false,
+        ),
+      );
 
   void setDays(int days) => state = state.copyWith(selectedDays: days);
   void setReason(String reason) => state = state.copyWith(reason: reason);
@@ -44,8 +44,6 @@ class DefaultModalController extends StateNotifier<DefaultModalState> {
 }
 
 final defaultModalProvider = StateNotifierProvider.autoDispose
-    .family<DefaultModalController, DefaultModalState, int>(
-      (ref, initialDay) {
-    return DefaultModalController(initialDay: initialDay);
-  },
-);
+    .family<DefaultModalController, DefaultModalState, int>((ref, initialDay) {
+      return DefaultModalController(initialDay: initialDay);
+    });

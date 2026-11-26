@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 class AdminRegisterDoneView extends StatelessWidget {
   final VoidCallback onBackToSplash;
 
-  const AdminRegisterDoneView({
-    super.key,
-    required this.onBackToSplash,
-  });
+  const AdminRegisterDoneView({super.key, required this.onBackToSplash});
 
   @override
   Widget build(BuildContext context) {
