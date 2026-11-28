@@ -6,15 +6,16 @@ class NoticeApi {
   final Dio _dio;
   NoticeApi(this._dio);
 
-  Future<List<Map<String, dynamic>>> fetchNoticesRaw() => guardApi(() async {
-    final res = await _dio.get(ApiEndpoints.notice);
+  Future<List<Map<String, dynamic>>> fetchNoticesRaw() =>
+      guardListApi(empty: [], () async {
+        final res = await _dio.get(ApiEndpoints.notice);
 
-    final data = res.data;
-    if (data is List) {
-      return data.map((e) => (e as Map).cast<String, dynamic>()).toList();
-    }
-    return [];
-  });
+        final data = res.data;
+        if (data is List) {
+          return data.map((e) => (e as Map).cast<String, dynamic>()).toList();
+        }
+        return [];
+      });
 
   Future<Map<String, dynamic>> fetchNoticeDetailRaw(int id) =>
       guardApi(() async {

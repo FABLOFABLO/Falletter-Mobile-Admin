@@ -63,15 +63,15 @@ class _FalletterCommunityViewState
       context: context,
       builder: (_) => DefaultModal(
         model: DefaultModalUiModel.ban(),
-        onConfirmBan: (days, reason) {
-          unawaited(
-            ref
+        onConfirmBan: (days, reason) async {
+          try {
+            await ref
                 .read(sanctionActionProvider.notifier)
-                .block(userId: userId, days: days, reason: reason)
-                .catchError((Object e) {
-                  if (context.mounted) showErrorSnackBar(context, e);
-                }),
-          );
+                .block(userId: userId, days: days, reason: reason);
+          } catch (e) {
+            if (context.mounted) showErrorSnackBar(context, e);
+            return;
+          }
           ref
               .read(communityMarksProvider.notifier)
               .markPostBanned(postId, true);
@@ -93,7 +93,9 @@ class _FalletterCommunityViewState
       switch (action) {
         case PostMenuAction.warn:
           await ref.read(sanctionActionProvider.notifier).warn(userId);
-          ref.read(communityMarksProvider.notifier).markPostWarned(postId, true);
+          ref
+              .read(communityMarksProvider.notifier)
+              .markPostWarned(postId, true);
           ref.invalidate(communityPostsProvider);
           break;
 

@@ -35,15 +35,15 @@ class CommunityDetailView extends ConsumerWidget {
       context: context,
       builder: (_) => DefaultModal(
         model: DefaultModalUiModel.ban(),
-        onConfirmBan: (days, reason) {
-          unawaited(
-            ref
+        onConfirmBan: (days, reason) async {
+          try {
+            await ref
                 .read(sanctionActionProvider.notifier)
-                .block(userId: userId, days: days, reason: reason)
-                .catchError((Object e) {
-                  if (context.mounted) showErrorSnackBar(context, e);
-                }),
-          );
+                .block(userId: userId, days: days, reason: reason);
+          } catch (e) {
+            if (context.mounted) showErrorSnackBar(context, e);
+            return;
+          }
           onMarkedBanned();
         },
         onConfirmLogout: null,
@@ -60,8 +60,12 @@ class CommunityDetailView extends ConsumerWidget {
     try {
       switch (action) {
         case PostMenuAction.warn:
-          await ref.read(sanctionActionProvider.notifier).warn(post.authorUserId);
-          ref.read(communityMarksProvider.notifier).markPostWarned(postId, true);
+          await ref
+              .read(sanctionActionProvider.notifier)
+              .warn(post.authorUserId);
+          ref
+              .read(communityMarksProvider.notifier)
+              .markPostWarned(postId, true);
           break;
 
         case PostMenuAction.ban:
@@ -138,12 +142,16 @@ class CommunityDetailView extends ConsumerWidget {
           child: Column(
             children: [
               CustomAppBar(showBack: true, showLogout: false),
-              Expanded(child: Center(child: Text(
+              Expanded(
+                child: Center(
+                  child: Text(
                     e is AppException
                         ? e.type.message
                         : AppErrorType.unknown.message,
                     style: FalletterTextStyle.body2,
-                  ))),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

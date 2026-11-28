@@ -11,7 +11,7 @@ class AdminUserApi {
     required int page,
     required int size,
     List<String>? sort,
-  }) => guardApi(() async {
+  }) => guardListApi(empty: {}, () async {
     final res = await _dio.get(
       ApiEndpoints.userAll,
       queryParameters: {

@@ -14,7 +14,7 @@ class LetterRepository {
 
   LetterRepository({required this.dioClient});
 
-  Future<List<LetterUnpassed>> fetchUnpassedLetters() => guardApi(() async {
+  Future<List<LetterUnpassed>> fetchUnpassedLetters() => guardListApi(empty: [], () async {
     final res = await dioClient.dio.get(ApiEndpoints.letterUnpassed);
 
     final data = res.data;

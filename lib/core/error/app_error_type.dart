@@ -3,6 +3,7 @@ enum AppErrorType {
   unauthorized,
   forbidden,
   notFound,
+  conflict,
   server,
   network,
   unknown,
@@ -19,6 +20,8 @@ extension AppErrorTypeMessage on AppErrorType {
         return '권한이 없어요.';
       case AppErrorType.notFound:
         return '요청한 정보를 찾을 수 없어요.';
+      case AppErrorType.conflict:
+        return '이미 처리된 요청이에요.';
       case AppErrorType.server:
         return '서버에 문제가 생겼어요. 잠시 후 다시 시도해주세요.';
       case AppErrorType.network:

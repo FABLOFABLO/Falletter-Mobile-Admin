@@ -12,6 +12,15 @@ void showErrorSnackBar(
   double bottomMargin = 20,
 }) {
   final type = error is AppException ? error.type : AppErrorType.unknown;
+  showMessageSnackBar(context, type.message, bottomMargin: bottomMargin);
+}
+
+/// 문구를 그대로 스낵바로 보여준다.
+void showMessageSnackBar(
+  BuildContext context,
+  String message, {
+  double bottomMargin = 20,
+}) {
   final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
   ScaffoldMessenger.of(context)
@@ -25,7 +34,7 @@ void showErrorSnackBar(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         duration: const Duration(seconds: 2),
         content: Text(
-          type.message,
+          message,
           style: FalletterTextStyle.body2.copyWith(color: FalletterColor.white),
         ),
       ),

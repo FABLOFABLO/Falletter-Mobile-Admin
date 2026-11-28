@@ -7,11 +7,12 @@ class CommunityApi {
 
   CommunityApi(this._dio);
 
-  Future<List<Map<String, dynamic>>> fetchPostsRaw() => guardApi(() async {
-    final res = await _dio.get(ApiEndpoints.communityPosts);
-    final List data = res.data as List;
-    return data.map((e) => (e as Map).cast<String, dynamic>()).toList();
-  });
+  Future<List<Map<String, dynamic>>> fetchPostsRaw() =>
+      guardListApi(empty: [], () async {
+        final res = await _dio.get(ApiEndpoints.communityPosts);
+        final List data = res.data as List;
+        return data.map((e) => (e as Map).cast<String, dynamic>()).toList();
+      });
 
   Future<Map<String, dynamic>> fetchPostDetailRaw(String postId) =>
       guardApi(() async {

@@ -33,6 +33,9 @@ extension DioErrorMapper on DioException {
     if (status == 404) {
       return AppException(AppErrorType.notFound, "찾을 수 없음", statusCode: status);
     }
+    if (status == 409) {
+      return AppException(AppErrorType.conflict, "중복 요청", statusCode: status);
+    }
     if (status != null && status >= 500) {
       return AppException(AppErrorType.server, "서버 오류", statusCode: status);
     }
@@ -54,5 +57,14 @@ Future<T> guardApi<T>(Future<T> Function() call) async {
     throw e.toAppException();
   } catch (e) {
     throw AppException(AppErrorType.unknown, "응답 처리 중 오류: $e");
+  }
+}
+
+Future<T> guardListApi<T>(Future<T> Function() call, {required T empty}) async {
+  try {
+    return await guardApi(call);
+  } on AppException catch (e) {
+    if (e.type == AppErrorType.notFound) return empty;
+    rethrow;
   }
 }
