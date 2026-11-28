@@ -74,10 +74,20 @@ class CustomAppBar extends ConsumerWidget {
     );
   }
 
-  Widget _icon({required Widget child, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(width: 40, height: 40, child: Center(child: child)),
+  Widget _icon({
+    required String label,
+    required Widget child,
+    required VoidCallback onTap,
+  }) {
+    return Semantics(
+      container: true,
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: SizedBox(width: 40, height: 40, child: Center(child: child)),
+      ),
     );
   }
 
@@ -102,6 +112,7 @@ class CustomAppBar extends ConsumerWidget {
                 alignment: Alignment.centerLeft,
                 child: showBack
                     ? _icon(
+                        label: '뒤로가기',
                         onTap: () {
                           if (onBack != null) {
                             onBack!();
@@ -120,6 +131,7 @@ class CustomAppBar extends ConsumerWidget {
                   children: [
                     if (showReport)
                       _icon(
+                        label: '신고 목록 열기',
                         onTap: () => context.push(RouterPath.report),
                         child: const Icon(
                           Symbols.e911_emergency,
@@ -129,6 +141,7 @@ class CustomAppBar extends ConsumerWidget {
                       ),
                     showLogout
                         ? _icon(
+                            label: '로그아웃 버튼',
                             onTap: () => _handleLogout(context, ref),
                             child: Icon(
                               Symbols.logout,

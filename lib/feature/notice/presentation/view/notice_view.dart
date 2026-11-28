@@ -101,6 +101,7 @@ class _FalletterNoticeViewState extends ConsumerState<FalletterNoticeView> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        tooltip: '공지 작성',
         shape: const CircleBorder(),
         elevation: 0,
         backgroundColor: Colors.black,

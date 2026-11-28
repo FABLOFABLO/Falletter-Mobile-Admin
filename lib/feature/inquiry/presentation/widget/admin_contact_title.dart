@@ -16,21 +16,22 @@ class AdminContactTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Text(name, style: FalletterTextStyle.subTitle2),
-            const SizedBox(width: 8),
-            Text(role, style: FalletterTextStyle.body2),
-          ],
-        ),
-        GestureDetector(
-          onTap: onTap,
-          child: const Icon(Symbols.arrow_forward_ios, size: 15),
-        ),
-      ],
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Text(name, style: FalletterTextStyle.subTitle2),
+              const SizedBox(width: 8),
+              Text(role, style: FalletterTextStyle.body2),
+            ],
+          ),
+          const Icon(Symbols.arrow_forward_ios, size: 15),
+        ],
+      ),
     );
   }
 }

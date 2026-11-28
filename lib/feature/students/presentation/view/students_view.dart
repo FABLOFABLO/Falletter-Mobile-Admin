@@ -223,6 +223,7 @@ class _FalletterStudentsViewState extends ConsumerState<FalletterStudentsView> {
                         hintText: '학생 검색',
                         contentPadding: const EdgeInsets.all(12),
                         suffixIcon: IconButton(
+                          tooltip: '검색',
                           onPressed: _commitSearch,
                           icon: const Icon(
                             Symbols.search,
@@ -252,6 +253,7 @@ class _FalletterStudentsViewState extends ConsumerState<FalletterStudentsView> {
                           ),
                         ),
                         PopupMenuButton<int>(
+                          tooltip: '학년 필터',
                           offset: const Offset(0, 44),
                           color: FalletterColor.gray100,
                           elevation: 0,
