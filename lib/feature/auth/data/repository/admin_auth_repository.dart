@@ -23,7 +23,7 @@ class AdminAuthRepository {
       if (status == 409) {
         throw AdminSignUpException(
           AdminSignUpErrorType.emailAlreadyExists,
-          "이미 존재하는 이메일입니다.",
+          "이미 등록된 어드민이에요.",
         );
       }
 

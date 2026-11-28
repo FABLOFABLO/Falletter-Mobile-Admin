@@ -3,6 +3,7 @@ enum SignInErrorType {
   userNotFound,
   invalidCredential,
   notApproved,
+  network,
   unknown,
 }
 

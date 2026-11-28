@@ -88,6 +88,7 @@ class SigninNotifier extends Notifier<SignInState> {
       case AdminSignInErrorType.notApproved:
         return SignInErrorType.notApproved;
       case AdminSignInErrorType.network:
+        return SignInErrorType.network;
       case AdminSignInErrorType.unknown:
         return SignInErrorType.unknown;
     }

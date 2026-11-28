@@ -28,12 +28,15 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
   String? _errorMessage(SignInErrorType type) {
     switch (type) {
       case SignInErrorType.userNotFound:
+        return '등록되지 않은 아이디예요.';
       case SignInErrorType.invalidCredential:
-        return '등록되지 않은 아이디 입니다';
+        return '비밀번호가 일치하지 않아요.';
       case SignInErrorType.notApproved:
-        return '등록되지 않은 아이디 입니다';
+        return '아직 승인되지 않은 어드민이에요.';
+      case SignInErrorType.network:
+        return '서버에 연결할 수 없어요. 네트워크를 확인해주세요.';
       case SignInErrorType.unknown:
-        return '등록되지 않은 아이디 입니다';
+        return '로그인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';
       case SignInErrorType.none:
         return null;
     }
@@ -171,11 +174,11 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
 
     final pwSuffixIcon = state.obscureText
         ? FieldIcon.hidePwIcon(
-      onPressed: () => ref.read(signinProvider.notifier).toggleObscure(),
-    )
+            onPressed: () => ref.read(signinProvider.notifier).toggleObscure(),
+          )
         : FieldIcon.showPwIcon(
-      onPressed: () => ref.read(signinProvider.notifier).toggleObscure(),
-    );
+            onPressed: () => ref.read(signinProvider.notifier).toggleObscure(),
+          );
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -258,7 +261,12 @@ class _FalletterSigninViewState extends ConsumerState<FalletterSigninView> {
                 child: AnimatedPadding(
                   duration: const Duration(milliseconds: 180),
                   curve: Curves.easeOut,
-                  padding: EdgeInsets.fromLTRB(20, 0, 20, viewInsetsBottom + 20),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    viewInsetsBottom + 20,
+                  ),
                   child: CustomElevatedButton(
                     onPressed: canSubmit
                         ? () => ref.read(signinProvider.notifier).submit()

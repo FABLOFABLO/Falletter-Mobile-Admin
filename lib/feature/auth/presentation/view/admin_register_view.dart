@@ -1,4 +1,5 @@
 import 'package:falletter_mobile_admin/core/components/button/elevated_button.dart';
+import 'package:falletter_mobile_admin/core/components/snackbar/error_snackbar.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
 import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/feature/auth/presentation/provider/admin_register_provider.dart';
@@ -98,6 +99,15 @@ class _AdminRegisterViewState extends ConsumerState<AdminRegisterView> {
   Widget build(BuildContext context) {
     final state = ref.watch(adminRegisterProvider);
     final notifier = ref.read(adminRegisterProvider.notifier);
+
+    ref.listen<String?>(adminRegisterProvider.select((s) => s.errorMessage), (
+      _,
+      message,
+    ) {
+      if (message != null) {
+        showMessageSnackBar(context, message, bottomMargin: 84);
+      }
+    });
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
