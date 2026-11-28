@@ -16,10 +16,7 @@ class AdminAuthRepository {
 
   Future<void> signUp(AdminSignUpRequest request) async {
     try {
-      await dioClient.dio.post(
-        ApiEndpoints.signUp,
-        data: request.toJson(),
-      );
+      await dioClient.dio.post(ApiEndpoints.signUp, data: request.toJson());
     } on DioException catch (e) {
       final status = e.response?.statusCode;
 
@@ -127,10 +124,7 @@ class AdminAuthRepository {
   }
 
   Future<void> sendEmailVerifyCode({required String email}) async {
-    await dioClient.dio.post(
-      ApiEndpoints.emailVerify,
-      data: {"email": email},
-    );
+    await dioClient.dio.post(ApiEndpoints.emailVerify, data: {"email": email});
   }
 
   Future<void> matchEmailVerifyCode({
@@ -139,10 +133,7 @@ class AdminAuthRepository {
   }) async {
     await dioClient.dio.post(
       ApiEndpoints.emailMatch,
-      data: {
-        "email": email,
-        "verify_code": verifyCode,
-      },
+      data: {"email": email, "verifyCode": verifyCode},
     );
   }
 }

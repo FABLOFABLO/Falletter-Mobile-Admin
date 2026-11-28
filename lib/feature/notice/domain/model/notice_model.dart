@@ -17,8 +17,8 @@ class Notice {
     return Notice(
       id: json['id'] as int,
       title: (json['title'] as String?) ?? '',
-      authorName: (json['author_name'] as String?) ?? '',
-      createdAt: _parseUtcDateTime(json['created_at'] as String),
+      authorName: (json['authorName'] as String?) ?? '',
+      createdAt: _parseUtcDateTime(json['createdAt'] as String),
       content: null,
     );
   }
@@ -28,8 +28,8 @@ class Notice {
       id: json['id'] as int,
       title: (json['title'] as String?) ?? '',
       content: (json['content'] as String?) ?? '',
-      authorName: (json['author_name'] as String?) ?? '',
-      createdAt: _parseUtcDateTime(json['created_at'] as String),
+      authorName: (json['authorName'] as String?) ?? '',
+      createdAt: _parseUtcDateTime(json['createdAt'] as String),
     );
   }
 

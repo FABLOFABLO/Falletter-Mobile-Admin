@@ -80,8 +80,8 @@ class AdminTokenResponse {
 
   factory AdminTokenResponse.fromJson(Map<String, dynamic> json) {
     return AdminTokenResponse(
-      accessToken: (json["access_token"] ?? "") as String,
-      refreshToken: (json["refresh_token"] ?? "") as String,
+      accessToken: (json["accessToken"] ?? "") as String,
+      refreshToken: (json["refreshToken"] ?? "") as String,
     );
   }
 }

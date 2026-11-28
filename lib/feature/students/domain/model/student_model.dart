@@ -18,11 +18,11 @@ class StudentSummary {
   factory StudentSummary.fromJson(Map<String, dynamic> json) {
     return StudentSummary(
       id:(json ['id'] as num).toInt(),
-      schoolNumber: (json ['school_number'] ?? '') as String,
+      schoolNumber: (json ['schoolNumber'] ?? '') as String,
       name: (json ['name'] ?? '') as String,
-      profileImage: (json ['profile_image']) as String?,
+      profileImage: (json ['profileImage']) as String?,
       gender: (json ['gender'] ?? '') as String,
-      warningCount: (json ['warning_count'] as num?)?.toInt() ?? 0,
+      warningCount: (json ['warningCount'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -53,9 +53,9 @@ class SuspendItem {
       type: (json ['type'] ?? '') as String,
       days: (json ['days'] as num?)?.toInt() ?? 0,
       reason: (json ['reason'] ?? '') as String,
-      startDate: parse(json ['start_date'] as String?),
-      endDate: parse(json ['end_date'] as String?),
-      createdAt: parse(json ['created_at'] as String?),
+      startDate: parse(json ['startDate'] as String?),
+      endDate: parse(json ['endDate'] as String?),
+      createdAt: parse(json ['createdAt'] as String?),
     );
   }
 }
@@ -83,11 +83,11 @@ class StudentDetail {
     final suspendsJson = (json['suspends'] as List?) ?? const [];
     return StudentDetail(
       id: (json['id'] as num).toInt(),
-      schoolNumber: (json['school_number'] ?? '') as String,
+      schoolNumber: (json['schoolNumber'] ?? '') as String,
       name: (json['name'] ?? '') as String,
-      profileImage: json['profile_image'] as String?,
+      profileImage: json['profileImage'] as String?,
       gender: (json['gender'] ?? '') as String,
-      warningCount: (json['warning_count'] as num?)?.toInt() ?? 0,
+      warningCount: (json['warningCount'] as num?)?.toInt() ?? 0,
       suspends: suspendsJson
           .whereType<Map<String, dynamic>>()
           .map(SuspendItem.fromJson)
@@ -117,8 +117,8 @@ class PageResponse<T> {
       ) {
     final list = (json['content'] as List?) ?? const [];
     return PageResponse(
-      totalElements: (json['total_elements'] as num?)?.toInt() ?? 0,
-      totalPages: (json['total_pages'] as num?)?.toInt() ?? 0,
+      totalElements: (json['totalElements'] as num?)?.toInt() ?? 0,
+      totalPages: (json['totalPages'] as num?)?.toInt() ?? 0,
       size: (json['size'] as num?)?.toInt() ?? 0,
       number: (json['number'] as num?)?.toInt() ?? 0,
       content: list.whereType<Map<String, dynamic>>().map(fromJsonT).toList(),

@@ -9,7 +9,7 @@ class AuthApi {
   Future<Map<String, dynamic>> refresh(String refreshToken) async {
     final res = await _dio.post(
       ApiEndpoints.refreshToken,
-      data: {"refresh_token": refreshToken},
+      data: {"refreshToken": refreshToken},
       options: Options(headers: {"Authorization": null}),
     );
 

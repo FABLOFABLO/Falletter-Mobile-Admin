@@ -16,10 +16,10 @@ class LetterUnpassed {
   factory LetterUnpassed.fromJson(Map<String, dynamic> json) {
     return LetterUnpassed(
       id: json['id'] as int,
-      isPassed: json['is_passed'] as bool,
-      receptionId: json['reception_id'] as int,
-      senderId: json['sender_id'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      isPassed: json['isPassed'] as bool,
+      receptionId: json['receptionId'] as int,
+      senderId: json['senderId'] as int,
+      createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
 }
@@ -45,10 +45,10 @@ class LetterUnpassedDetail {
     return LetterUnpassedDetail(
       id: json['id'] as int,
       content: (json['content'] as String?) ?? '',
-      isPassed: json['is_passed'] as bool,
-      receptionId: json['reception_id'] as int,
-      senderId: json['sender_id'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      isPassed: json['isPassed'] as bool,
+      receptionId: json['receptionId'] as int,
+      senderId: json['senderId'] as int,
+      createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
 }

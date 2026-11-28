@@ -80,8 +80,8 @@ class AuthInterceptor extends Interceptor {
     try {
       final data = await _authApi.refresh(refreshToken);
 
-      final newAccess = data['access_token'] as String;
-      final newRefresh = data['refresh_token'] as String;
+      final newAccess = data['accessToken'] as String;
+      final newRefresh = data['refreshToken'] as String;
 
       await _storage.saveTokens(
         accessToken: newAccess,

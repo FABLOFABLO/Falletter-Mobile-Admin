@@ -8,9 +8,7 @@ class CommunityRepository {
 
   CommunityRepository({required this.api});
 
-  Future<List<PostUi>> fetchPosts({
-    required CommunityMarksState marks,
-  }) async {
+  Future<List<PostUi>> fetchPosts({required CommunityMarksState marks}) async {
     final raw = await api.fetchPostsRaw();
 
     return raw.map((json) {
@@ -18,7 +16,7 @@ class CommunityRepository {
       final postId = (json['id'] as int).toString();
       final mark = marks.postMarks[postId];
 
-      final cc = json['comment_count'];
+      final cc = json['commentCount'];
       final commentCount = cc is int ? cc : (cc is num ? cc.toInt() : 0);
 
       return PostUi(
@@ -26,10 +24,12 @@ class CommunityRepository {
         title: json['title'] as String,
         preview: json['content'] as String,
         author: author['name'] as String,
-        authorUserId: author['user_id'] as int,
-        timeText: DateFormatter.mmdd(DateTime.parse(json['created_at'] as String)),
+        authorUserId: author['userId'] as int,
+        timeText: DateFormatter.mmdd(
+          DateTime.parse(json['createdAt'] as String),
+        ),
         commentCount: commentCount,
-        deletedByAdmin: json['is_deleted'] as bool,
+        deletedByAdmin: json['isDeleted'] as bool,
         warned: mark?.warned ?? false,
         banned: mark?.banned ?? false,
       );
@@ -50,12 +50,10 @@ class CommunityRepository {
       title: json['title'] as String,
       preview: json['content'] as String,
       author: author['name'] as String,
-      authorUserId: author['user_id'] as int,
-      timeText: DateFormatter.mmdd(
-        DateTime.parse(json['created_at'] as String),
-      ),
+      authorUserId: author['userId'] as int,
+      timeText: DateFormatter.mmdd(DateTime.parse(json['createdAt'] as String)),
       commentCount: (json['comment'] as List?)?.length ?? 0,
-      deletedByAdmin: json['is_deleted'] as bool,
+      deletedByAdmin: json['isDeleted'] as bool,
       warned: postMark?.warned ?? false,
       banned: postMark?.banned ?? false,
     );
@@ -65,19 +63,17 @@ class CommunityRepository {
       final cm = (c as Map).cast<String, dynamic>();
       final user = (cm['user'] as Map).cast<String, dynamic>();
 
-      final commentId = (cm['comment_id'] as int).toString();
+      final commentId = (cm['commentId'] as int).toString();
       final key = '$postId:$commentId';
       final cMark = marks.commentMarks[key];
 
       return CommentUi(
         id: commentId,
         postId: postId,
-        authorUserId: user['user_id'] as int,
+        authorUserId: user['userId'] as int,
         author: user['name'] as String,
         content: cm['comment'] as String,
-        timeText: DateFormatter.mmdd(
-          DateTime.parse(cm['created_at'] as String),
-        ),
+        timeText: DateFormatter.mmdd(DateTime.parse(cm['createdAt'] as String)),
         deletedByAdmin: cMark?.deletedByAdmin ?? false,
         warned: cMark?.warned ?? false,
         banned: cMark?.banned ?? false,
