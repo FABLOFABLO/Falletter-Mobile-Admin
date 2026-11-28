@@ -27,7 +27,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: kDebugMode ? RouterPath.community : RouterPath.splash,
+    initialLocation: RouterPath.splash,
     routes: [
       GoRoute(
         path: RouterPath.splash,
