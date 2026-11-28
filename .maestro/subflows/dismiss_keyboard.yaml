@@ -1,0 +1,7 @@
+# 상단 빈 영역(앱바/타이틀 높이)을 탭해 포커스를 해제한다.
+# Android에서 hideKeyboard는 키보드가 없을 때 Back 키로 동작해 앱이 종료될 수 있어 사용하지 않는다.
+appId: ${APP_ID}
+---
+- tapOn:
+    point: "50%,9%"
+- waitForAnimationToEnd

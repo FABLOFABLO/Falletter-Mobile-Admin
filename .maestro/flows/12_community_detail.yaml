@@ -1,0 +1,21 @@
+appId: ${APP_ID}
+tags: [community, logged-in]
+---
+- runFlow: ../subflows/ensure_logged_in.yaml
+- tapOn: "커뮤니티"
+- extendedWaitUntil:
+    visible: ".*댓글 \\d+개.*|아직 작성된 글이 없어요."
+    timeout: 10000
+- runFlow:
+    when:
+      visible: ".*댓글 \\d+개.*"
+    commands:
+      - tapOn:
+          text: ".*댓글 \\d+개.*"
+          index: 0
+      - assertNotVisible: "학생 목록"   # 상세는 하단 탭 없는 루트 화면
+      - assertVisible: "뒤로가기"
+      - takeScreenshot: 12_community_detail
+      - tapOn: "뒤로가기"
+      - assertVisible: "학생 목록"
+      - assertVisible: ".*댓글 \\d+개.*"

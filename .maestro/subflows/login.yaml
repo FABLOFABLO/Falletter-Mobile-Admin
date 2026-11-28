@@ -1,0 +1,12 @@
+# 로그인 화면에서 ADMIN_EMAIL / ADMIN_PASSWORD 로 로그인 후 레터 탭 진입까지 확인
+appId: ${APP_ID}
+---
+- tapOn: "이메일을 입력해주세요."
+- inputText: ${ADMIN_EMAIL}
+- tapOn: "비밀번호를 입력해주세요."
+- inputText: ${ADMIN_PASSWORD}
+- runFlow: dismiss_keyboard.yaml
+- tapOn: "로그인하기"
+- extendedWaitUntil:
+    visible: "학생 목록"
+    timeout: 20000

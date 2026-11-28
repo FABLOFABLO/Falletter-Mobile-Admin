@@ -1,0 +1,29 @@
+appId: ${APP_ID}
+tags: [students, logged-in]
+---
+- runFlow: ../subflows/ensure_logged_in.yaml
+- tapOn: "학생 목록"
+- extendedWaitUntil:
+    visible: "학생 검색"
+    timeout: 10000
+- assertNotVisible: "학생 목록을 불러오지 못했습니다."
+
+# 학년 필터: 2학년 선택 → 칩 표시
+- tapOn: "학년 필터"
+- assertVisible: "1학년"
+- assertVisible: "3학년"
+- tapOn: "2학년"
+- assertVisible: "2학년"
+- takeScreenshot: 13_grade_filter
+# 같은 학년 재선택 → 해제
+- tapOn: "학년 필터"
+- tapOn: "2학년"
+- assertNotVisible: "2학년"
+
+# 존재하지 않는 이름 검색 → 결과 없음
+- tapOn: "학생 검색"
+- inputText: "없는학생zzz"
+# 검색 필드가 멀티라인이라 Enter는 줄바꿈이 됨 → 검색 아이콘으로 제출
+- tapOn: "검색"
+- assertNotVisible: ".*남학생.*|.*여학생.*"
+- takeScreenshot: 13_search_empty

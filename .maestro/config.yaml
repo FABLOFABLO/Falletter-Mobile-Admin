@@ -1,0 +1,18 @@
+# Maestro 워크스페이스 설정
+# 실행: ./.maestro/run.sh [android|ios|all]
+flows:
+  - "flows/*"
+executionOrder:
+  continueOnFailure: true
+  flowsOrder:
+    - 01_splash_logged_out
+    - 02_signin_validation
+    - 03_inquiry_contact
+    - 04_register_info_validation
+    - 10_e2e_core_journey
+    - 11_letter_list
+    - 12_community_detail
+    - 13_students_search_filter
+    - 14_notice_write_form
+    - 15_report_tabs_detail
+    - 16_auto_login

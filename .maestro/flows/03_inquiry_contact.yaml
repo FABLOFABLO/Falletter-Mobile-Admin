@@ -1,0 +1,24 @@
+appId: ${APP_ID}
+tags: [inquiry, logged-out]
+---
+- runFlow: ../subflows/ensure_logged_out.yaml
+- tapOn: "문의"
+- assertVisible: "회원가입 문의"
+- assertVisible: ".*김시흔.*"
+- assertVisible: ".*최승우.*"
+- assertVisible: ".*이지아.*"
+- assertVisible: ".*김수인.*"
+- assertVisible: "어드민 등록하기"
+- takeScreenshot: 03_inquiry_list
+
+# 담당자 카드 상세
+- tapOn: ".*최승우.*"
+- assertVisible: ".*Mobile.*"
+- assertVisible: ".*Email.*"
+- takeScreenshot: 03_admin_card
+- tapOn: "뒤로가기"
+- assertVisible: "회원가입 문의"
+
+# 문의 → 뒤로가기 → 스플래시
+- tapOn: "뒤로가기"
+- assertVisible: "로그인하기"

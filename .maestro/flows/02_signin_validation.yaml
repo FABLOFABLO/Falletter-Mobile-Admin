@@ -1,0 +1,51 @@
+appId: ${APP_ID}
+tags: [auth, logged-out]
+---
+- runFlow: ../subflows/ensure_logged_out.yaml
+- tapOn: "로그인하기"
+- assertVisible: "이메일을 입력해주세요."
+
+# 1) 빈 입력 → 로그인 버튼 비활성
+- assertVisible:
+    text: "로그인하기"
+    enabled: false
+
+# 2) 이메일만 입력 → 여전히 비활성
+- tapOn: "이메일을 입력해주세요."
+- inputText: ${ADMIN_EMAIL}
+- runFlow: ../subflows/dismiss_keyboard.yaml
+- assertVisible:
+    text: "로그인하기"
+    enabled: false
+
+# 3) 잘못된 비밀번호 → '비밀번호가 일치하지 않아요.'
+- tapOn: "비밀번호를 입력해주세요."
+- inputText: "wrong-password-123"
+- runFlow: ../subflows/dismiss_keyboard.yaml
+- assertVisible:
+    text: "로그인하기"
+    enabled: true
+- tapOn: "로그인하기"
+- extendedWaitUntil:
+    visible: "비밀번호가 일치하지 않아요."
+    timeout: 10000
+- takeScreenshot: 02_wrong_password
+- assertNotVisible: "학생 목록"
+
+# 4) 등록되지 않은 아이디 → '등록되지 않은 아이디예요.'
+- runFlow: ../subflows/ensure_logged_out.yaml
+- tapOn: "로그인하기"
+- tapOn: "이메일을 입력해주세요."
+- inputText: "maestro-not-exist-user-0000"
+- tapOn: "비밀번호를 입력해주세요."
+- inputText: "wrong-password-123"
+- runFlow: ../subflows/dismiss_keyboard.yaml
+- tapOn: "로그인하기"
+- extendedWaitUntil:
+    visible: "등록되지 않은 아이디예요."
+    timeout: 10000
+- takeScreenshot: 02_unknown_user
+
+# 5) 로그인 화면의 '문의' 링크 → 문의 화면
+- tapOn: "문의"
+- assertVisible: "회원가입 문의"

@@ -1,0 +1,16 @@
+# 로그인된 메인(레터 탭) 상태를 보장한다. 이미 로그인돼 있으면 그대로 사용.
+appId: ${APP_ID}
+---
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible: "로그인하기|학생 목록"
+    timeout: 20000
+- runFlow:
+    when:
+      visible: "로그인하기"
+    commands:
+      - tapOn: "로그인하기"
+      - runFlow: login.yaml
+- assertVisible: "학생 목록"
+- tapOn: "레터"

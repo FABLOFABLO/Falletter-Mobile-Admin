@@ -1,0 +1,12 @@
+appId: ${APP_ID}
+tags: [auth, logged-in]
+---
+- runFlow: ../subflows/ensure_logged_in.yaml
+- stopApp
+- launchApp
+# 스플래시(3초) 이후 로그인 화면을 거치지 않고 메인으로 이동
+- extendedWaitUntil:
+    visible: "학생 목록"
+    timeout: 15000
+- assertNotVisible: "로그인하기"
+- takeScreenshot: 16_auto_login

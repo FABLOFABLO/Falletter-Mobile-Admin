@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+tags: [auth, register, logged-out]
+# 인증번호 전송/등록 완료는 실제 메일 발송·계정 생성이 발생하므로 제외 (읽기 전용 정책)
+---
+- runFlow: ../subflows/ensure_logged_out.yaml
+- tapOn: "문의"
+- tapOn: "어드민 등록하기"
+- assertVisible: "어드민 등록"
+- assertVisible: "남성"
+- assertVisible: "여성"
+- assertVisible: "이름을 입력해주세요."
+- assertVisible: "인증번호 전송"
+- assertVisible:
+    text: "다음"
+    enabled: false
+
+# 성별·이름만 입력해도 인증 전이면 '다음'은 비활성
+- tapOn: "여성"
+- tapOn: "이름을 입력해주세요."
+- inputText: "메이스트로"
+- runFlow: ../subflows/dismiss_keyboard.yaml
+- assertVisible:
+    text: "다음"
+    enabled: false
+- takeScreenshot: 04_register_info

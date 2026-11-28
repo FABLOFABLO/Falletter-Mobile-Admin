@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+tags: [letter, logged-in]
+---
+- runFlow: ../subflows/ensure_logged_in.yaml
+- extendedWaitUntil:
+    visible: ".*반려.*|아직 반려된 레터가 없어요.|레터 목록을 불러오지 못했습니다."
+    timeout: 10000
+- assertNotVisible: "레터 목록을 불러오지 못했습니다."
+- runFlow:
+    when:
+      visible: ".*\\d+월 \\d+일.*반려.*"
+    commands:
+      # 당겨서 새로고침 후에도 목록 유지
+      - swipe:
+          direction: DOWN
+          duration: 600
+      - extendedWaitUntil:
+          visible: ".*\\d+월 \\d+일.*반려.*"
+          timeout: 10000
+- takeScreenshot: 11_letter_list

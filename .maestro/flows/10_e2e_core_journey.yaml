@@ -1,0 +1,61 @@
+appId: ${APP_ID}
+tags: [smoke, e2e]
+---
+# 1. 비로그인 진입 → 로그인
+- runFlow: ../subflows/ensure_logged_out.yaml
+- tapOn: "로그인하기"
+- runFlow: ../subflows/login.yaml
+
+# 2. 메인 셸: 하단 탭 + 앱바 액션
+- assertVisible: "레터"
+- assertVisible: "커뮤니티"
+- assertVisible: "학생 목록"
+- assertVisible: "공지"
+- assertVisible: "신고 목록 열기"
+- assertVisible: "로그아웃 버튼"
+- takeScreenshot: 10_letter_tab
+
+# 3. 탭 순회
+- tapOn: "커뮤니티"
+- extendedWaitUntil:
+    visible: ".*댓글 \\d+개.*|아직 작성된 글이 없어요.|커뮤니티를 불러오는 중 오류가 발생했어요"
+    timeout: 10000
+- assertNotVisible: "커뮤니티를 불러오는 중 오류가 발생했어요"
+- takeScreenshot: 10_community_tab
+
+- tapOn: "학생 목록"
+- extendedWaitUntil:
+    visible: "학생 검색"
+    timeout: 10000
+- assertNotVisible: "학생 목록을 불러오지 못했습니다."
+- takeScreenshot: 10_students_tab
+
+- tapOn: "공지"
+- extendedWaitUntil:
+    visible: "공지 작성"
+    timeout: 10000
+- assertNotVisible: "공지사항을 불러오지 못했습니다."
+- takeScreenshot: 10_notice_tab
+
+# 4. 신고 목록 진입/복귀
+- tapOn: "신고 목록 열기"
+- assertVisible: "신고 목록"
+- assertVisible: "대기중.*"
+- tapOn: "뒤로가기"
+- assertVisible: "학생 목록"
+
+# 5. 로그아웃 취소 → 유지
+- tapOn: "로그아웃 버튼"
+- assertVisible: ".*하시겠습니까.*"   # 모달 제목+메시지가 하나의 라벨로 병합됨
+- tapOn: "취소"
+- assertNotVisible: ".*하시겠습니까.*"
+- assertVisible: "학생 목록"
+
+# 6. 로그아웃 확인 → 스플래시
+- tapOn: "로그아웃 버튼"
+- tapOn: "확인"
+- extendedWaitUntil:
+    visible: "로그인하기"
+    timeout: 15000
+- assertNotVisible: "학생 목록"
+- takeScreenshot: 10_after_logout

@@ -1,0 +1,19 @@
+# 앱을 초기화 상태로 실행하고, 로그아웃된 스플래시 화면을 보장한다.
+# iOS는 clearState 후에도 Keychain(flutter_secure_storage) 토큰이 남을 수 있어 필요 시 로그아웃 처리.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "로그인하기|레터"
+    timeout: 20000
+- runFlow:
+    when:
+      visible: "레터"
+    commands:
+      - tapOn: "로그아웃 버튼"
+      - tapOn: "확인"
+      - extendedWaitUntil:
+          visible: "로그인하기"
+          timeout: 15000
+- assertVisible: "로그인하기"

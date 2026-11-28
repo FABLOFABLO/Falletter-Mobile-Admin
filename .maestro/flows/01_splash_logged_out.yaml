@@ -1,0 +1,13 @@
+appId: ${APP_ID}
+tags: [smoke, auth, logged-out]
+---
+- runFlow: ../subflows/ensure_logged_out.yaml
+- assertVisible: "회원가입은 관리자에게 문의하세요.*"
+- assertVisible: "문의"
+- assertVisible:
+    text: "로그인하기"
+    enabled: true
+- tapOn: "로그인하기"
+- assertVisible: "이메일을 입력해주세요."
+- assertVisible: "비밀번호를 입력해주세요."
+- takeScreenshot: 01_signin_screen

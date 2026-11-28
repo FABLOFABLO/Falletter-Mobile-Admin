@@ -1,0 +1,38 @@
+appId: ${APP_ID}
+tags: [notice, logged-in]
+---
+- runFlow: ../subflows/ensure_logged_in.yaml
+- tapOn: "공지"
+- extendedWaitUntil:
+    visible: "공지 작성"
+    timeout: 10000
+- assertNotVisible: "공지사항을 불러오지 못했습니다."
+
+- tapOn: "공지 작성"
+- assertVisible: "제목 입력"
+- assertVisible: "내용입력"
+- assertVisible:
+    text: "저장"
+    enabled: false
+
+# 제목만 입력 → 저장 비활성
+- tapOn: "제목 입력"
+- inputText: "Maestro 테스트 제목"
+- runFlow: ../subflows/dismiss_keyboard.yaml
+- assertVisible:
+    text: "저장"
+    enabled: false
+
+# 내용까지 입력 → 저장 활성 (읽기 전용 정책상 누르지 않음)
+- tapOn: "내용입력"
+- inputText: "Maestro 자동화 테스트 내용"
+- runFlow: ../subflows/dismiss_keyboard.yaml
+- assertVisible:
+    text: "저장"
+    enabled: true
+- takeScreenshot: 14_notice_write_filled
+
+# 저장 없이 복귀
+- tapOn: "뒤로가기"
+- assertVisible: "공지 작성"
+- assertNotVisible: "Maestro 테스트 제목"

@@ -1,0 +1,53 @@
+appId: ${APP_ID}
+tags: [report, logged-in]
+# 반려/처리 완료 버튼은 실제 처리가 일어나므로 누르지 않음
+---
+- runFlow: ../subflows/ensure_logged_in.yaml
+- tapOn: "신고 목록 열기"
+- assertVisible: "신고 목록"
+- assertVisible: "대기중.*"
+- assertVisible: "반려.*"
+- assertVisible: "처리완료.*"
+- assertVisible: "전체"
+
+# 상태 탭 전환
+- tapOn: "반려.*"
+- extendedWaitUntil:
+    visible: "신고일:.*|접수된 신고가 없어요."
+    timeout: 10000
+- tapOn: "처리완료.*"
+- extendedWaitUntil:
+    visible: "신고일:.*|접수된 신고가 없어요."
+    timeout: 10000
+- tapOn: "대기중.*"
+- extendedWaitUntil:
+    visible: "신고일:.*|접수된 신고가 없어요."
+    timeout: 10000
+- assertNotVisible: "불러오지 못했습니다. 다시 시도"
+
+# 카테고리 필터 전환
+- tapOn: "커뮤니티"
+- tapOn: "레터"
+- tapOn: "전체"
+- takeScreenshot: 15_report_list
+
+# 상세 (데이터가 있을 때만)
+- runFlow:
+    when:
+      visible: "신고일:.*"
+    commands:
+      - tapOn:
+          text: "신고일:.*"
+          index: 0
+      - assertVisible: "신고 목록 상세"
+      - assertVisible: "신고자"
+      - assertVisible: "대상자"
+      - assertVisible: "신고 사유"
+      - assertVisible: "반려"
+      - assertVisible: "처리 완료"
+      - takeScreenshot: 15_report_detail
+      - tapOn: "뒤로가기"
+      - assertVisible: "신고 목록"
+
+- tapOn: "뒤로가기"
+- assertVisible: "학생 목록"
