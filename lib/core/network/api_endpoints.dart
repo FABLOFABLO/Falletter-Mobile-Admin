@@ -42,4 +42,10 @@ class ApiEndpoints {
   static String userWarn(String userId) => "/admin/warning/$userId";
 
   static String userBan(String userId) => "/admin/block/$userId";
+
+  /// Report
+  static const report = "/admin/report";
+
+  static String reportStatus(String reportId) =>
+      "/admin/report/$reportId/status";
 }

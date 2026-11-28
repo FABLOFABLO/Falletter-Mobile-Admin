@@ -1,5 +1,6 @@
 import 'package:falletter_mobile_admin/core/components/app_bar/custom_app_bar.dart';
 import 'package:falletter_mobile_admin/core/constants/color.dart';
+import 'package:falletter_mobile_admin/core/constants/textstyle.dart';
 import 'package:falletter_mobile_admin/core/router/router_path.dart';
 import 'package:falletter_mobile_admin/feature/report/domain/model/report_detail.dart';
 import 'package:falletter_mobile_admin/feature/report/presentation/provider/report_detail_provider.dart';
@@ -9,6 +10,7 @@ import 'package:falletter_mobile_admin/feature/report/presentation/widget/report
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class ReportListView extends ConsumerStatefulWidget {
   const ReportListView({super.key});
@@ -47,11 +49,7 @@ class _ReportListViewState extends ConsumerState<ReportListView>
   Widget build(BuildContext context) {
     final category = ReportCategory.values[_selectedIndex];
     final status = ReportStatus.values[_tabController.index];
-    final statuses = ref.watch(reportStatusesProvider);
-    final reportIds = dummyReportIds
-        .where((id) => statuses[id] == status)
-        .where((id) => category.matches(dummyReportTypeOf(id)))
-        .toList();
+    final reportsAsync = ref.watch(reportListProvider(status));
 
     return Scaffold(
       backgroundColor: FalletterColor.background,
@@ -75,21 +73,57 @@ class _ReportListViewState extends ConsumerState<ReportListView>
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: ListView.separated(
-                  itemBuilder: (context, int index) {
-                    final reportId = reportIds[index];
-                    return ReportCard(
-                      onPressed: () => context.push(
-                        RouterPath.reportDetail,
-                        extra: reportId,
-                      ),
-                      time: '2026.07.06',
-                      studentInfo: '2100 이지아',
+                child: reportsAsync.when(
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, _) => Center(
+                    child: TextButton(
+                      onPressed: () =>
+                          ref.invalidate(reportListProvider(status)),
+                      child: const Text('불러오지 못했습니다. 다시 시도'),
+                    ),
+                  ),
+                  data: (reports) {
+                    final filtered = reports
+                        .where((r) => category.matches(r.type))
+                        .toList();
+                    return RefreshIndicator(
+                      onRefresh: () =>
+                          ref.refresh(reportListProvider(status).future),
+                      child: filtered.isEmpty
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                const SizedBox(height: 200),
+                                Center(
+                                  child: Text(
+                                    '접수된 신고가 없어요.',
+                                    style: FalletterTextStyle.body2,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : ListView.separated(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemBuilder: (context, int index) {
+                                final report = filtered[index];
+                                return ReportCard(
+                                  onPressed: () => context.push(
+                                    RouterPath.reportDetail,
+                                    extra: report,
+                                  ),
+                                  time: DateFormat(
+                                    'yyyy.MM.dd',
+                                  ).format(report.createdAt),
+                                  studentInfo: report.target,
+                                );
+                              },
+                              separatorBuilder: (context, int index) =>
+                                  const SizedBox(height: 12),
+                              itemCount: filtered.length,
+                            ),
                     );
                   },
-                  separatorBuilder: (context, int index) =>
-                      const SizedBox(height: 12),
-                  itemCount: reportIds.length,
                 ),
               ),
             ],

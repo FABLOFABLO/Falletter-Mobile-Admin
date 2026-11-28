@@ -3,8 +3,10 @@ import 'package:falletter_mobile_admin/core/router/app_router.dart';
 import 'package:falletter_mobile_admin/core/theme/falletter_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 void main() {
+  timeago.setLocaleMessages('ko', timeago.KoMessages());
   runApp(const ProviderScope(child: MyApp()));
 }
 

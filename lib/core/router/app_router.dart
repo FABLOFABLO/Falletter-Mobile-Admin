@@ -11,6 +11,7 @@ import 'package:falletter_mobile_admin/feature/letter/presentation/view/letter_v
 import 'package:falletter_mobile_admin/feature/notice/presentation/view/notice_detail_view.dart';
 import 'package:falletter_mobile_admin/feature/notice/presentation/view/notice_view.dart';
 import 'package:falletter_mobile_admin/feature/notice/presentation/view/notice_write_view.dart';
+import 'package:falletter_mobile_admin/feature/report/domain/model/report_detail.dart';
 import 'package:falletter_mobile_admin/feature/report/presentation/view/report_detail_view.dart';
 import 'package:falletter_mobile_admin/feature/report/presentation/view/report_list_view.dart';
 import 'package:falletter_mobile_admin/feature/signin/presentation/view/signin_view.dart';
@@ -52,8 +53,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: 'detail',
             parentNavigatorKey: _rootNavigatorKey,
             builder: (context, state) {
-              final reportId = state.extra as int;
-              return ReportDetailView(reportId: reportId);
+              final report = state.extra as ReportDetail;
+              return ReportDetailView(report: report);
             },
           ),
         ],
